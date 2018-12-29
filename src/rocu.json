@@ -1,0 +1,18 @@
+{
+  "lang": "js",
+  "title": "静的サイトジェネレーター開発日誌",
+  "keywords": "静的サイトジェネレーター,NodeJS,React,generator",
+  "copyright": "@Himenon",
+  "viewport": {
+    "initial-scale": 1.0,
+    "minimum-scale": 0.5,
+    "user-scalable": "no"
+  },
+  "js": [
+    "/assets/js/respond.js"
+  ],
+  "css": [
+    "/assets/stylesheets/styles.css",
+    "/assets/stylesheets/pygment_trac.css"
+  ]
+}

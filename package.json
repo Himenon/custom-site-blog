@@ -1,0 +1,24 @@
+{
+  "name": "rocu-develop-blog",
+  "version": "1.0.0",
+  "description": "静的サイトジェネレーター開発日誌",
+  "main": "index.js",
+  "dependencies": {},
+  "devDependencies": {
+    "rocu": "0.0.4"
+  },
+  "scripts": {
+    "start": "rocu src -Do",
+    "build": "rocu src --out-dir dist"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Himenon/rocu-develop-blog.git"
+  },
+  "author": "Himenon",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Himenon/rocu-develop-blog/issues"
+  },
+  "homepage": "https://github.com/Himenon/rocu-develop-blog#readme"
+}
