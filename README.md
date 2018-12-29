@@ -2,9 +2,15 @@
 
 ## 日誌を書く方法
 
-[rocu](https://github.com/Himenon/rocu)をインストールします。
-
 ```bash
-npm i -g rocu
+git clone https://github.com/Himenon/rocu-develop-blog.git
+cd ./rocu-develop-blog
+npm i
+npm start
 ```
 
+## git pushする前
+
+```bash
+npm run build
+```
