@@ -1,0 +1,15 @@
+<html><head lang="js"><title>アセット系のファイルをコピーする機構</title><meta charSet="utf-8"/><meta name="keywords" content="静的サイトジェネレーター,NodeJS,React,generator"/><meta name="description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。"/><meta name="copyright" content="@Himenon"/><meta name="viewport" content="initial-scale=1,minimum-scale=0.5,user-scalable=no"/><script src="/assets/js/respond.js"></script><link href="/assets/stylesheets/styles.css" rel="stylesheet"/><link href="/assets/stylesheets/pygment_trac.css" rel="stylesheet"/></head><body><div><h1>アセット系のファイルをコピーする機構</h1><p>PR11で追加しました。</p><ul><li><a href="https://github.com/Himenon/rocu/pull/11">https://github.com/Himenon/rocu/pull/11</a></li></ul><h2>選定ライブラリ</h2><p>再帰的にファイルをコピーでき、フィルタリングできるライブラリとして、<a href="https://www.npmjs.com/package/fs-extra">fs-extra</a>（<a href="https://github.com/jprichardson/node-fs-extra">GitHub</a>)を使いました。
+<a href="https://www.npmjs.com/package/ncp">ncp</a>もあったのですが、型定義ファイルが存在しなかったので利用する候補から外れました。</p><h2>実装の話</h2><p>コピーするときに、ブラウザで利用するであろうファイルをフィルタリングします。
+PR11ではデフォルトで下記の拡張子がホワイトリストに入る形にしました。</p><pre><code class="language-ts">const ASSET_EXTENSIONS = [&quot;.css&quot;, &quot;.js&quot;, &quot;.png&quot;, &quot;.jpeg&quot;, &quot;.jpg&quot;, &quot;.gif&quot;];
+</code></pre><p>が、実際にリリースして使って見ると、ブラックリスト形式のほうが良さそだな、と思いつつあります。</p><p>さて、少しだけ実装で「あぁ、そうか」となったところがあります。filterの条件を書くときに、引数として引数としてコピーもとのpathが飛んできます。
+以下のコードだと<code>targetPath</code>に該当します。</p><pre><code class="language-ts">export const copyAssetFiles = async (src: string, dest: string) =&gt; {
+  await fsExtra.copy(src, dest, {
+    filter: (targetPath: string) =&gt; {
+      return // targetPathはコピー元のpath
+    },
+    recursive: true,
+  });
+};
+</code></pre><p>最初は飛んでくるものはファイルだろう、と思ってホワイトリストでフィルタリングするコードを入れたら見事に何もコピーされませんでした。
+答えは簡単で、<strong>ディレクトリ</strong>のpathも飛んでくるんですよねこれ。</p><p>なので、ディレクトリ、または、ホワイトリストに属するファイルの場合のみコピーするが正しい条件となります。</p><pre><code class="language-ts">(targetPath: string) =&gt; isDirectory(targetPath) || isAssetFile(targetPath)
+</code></pre><p>あぁ、書いていてブラックリスト型式のほうよいな、という気分になりました。多分次のリリースではブラックリスト形式になってます。</p></div></body></html>

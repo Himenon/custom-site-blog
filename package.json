@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "rocu src -Do",
-    "build": "rocu src --out-dir dist"
+    "build": "rocu src --out-dir docs"
   },
   "repository": {
     "type": "git",
