@@ -5,11 +5,11 @@
   "main": "index.js",
   "dependencies": {},
   "devDependencies": {
-    "rocu": "0.0.4"
+    "rocu": "0.0.6"
   },
   "scripts": {
-    "start": "rocu src -Do",
-    "build": "rocu src --out-dir docs"
+    "start": "rocu src -Do --base-path rocu-develop-blog",
+    "build": "rocu src --out-dir docs --base-path rocu-develop-blog"
   },
   "repository": {
     "type": "git",
