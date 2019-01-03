@@ -2,21 +2,27 @@
 title: 静的サイトジェネレーター開発日誌
 ---
 
-# 静的サイトジェネレーター開発日誌
-
 ## 作っているもの
 
-[rocu](https://github.com/Himenon/rocu)（JavaScript/NodeJS）というジェネレーターを作っています。
-開発のモチベーションは、自分が必要としている機能を盛り込むことにあります。
+[rocu](https://github.com/Himenon/rocu)という名前でNodeJS製の静的サイトジェネレーターを作っています。
+特徴としては、`React`で拡張でき、`型`がデフォルトであることです。
 
-また、このジェネレーターは<https://github.com/c8r/gen>をベースに拡張を重ねているものです。
+<div style={{ textAlign: "center", fontSize: "1.5em", fontWeight: "bold" }}>
+この記事自体、rocuで生成されたものです。<br />
+<a href="https://github.com/Himenon/rocu-develop-blog">この記事のソース</a>
+</div>
 
-開発のロードマップは[こちら](./loadmap)にまとめてあります。
+また、このジェネレーターは<https://github.com/c8r/gen>をベースに拡張を重ねています。
+
+開発のロードマップは[こちら](./loadmap)。鋭意開発中です。
+
+開発者のTwitter → [@himenoglyph](https://twitter.com/himenoglyph)
 
 ## 開発ブログ
 
-- [アセット系のファイルをコピーする機構](./article/copy-assets-file)
-- [ビルド時の参照補完機能と、ベースパスの実装](./article/auto-link)
+- [ビルド時にファイルをコピーする機構の見直し](./article/copy-assets-file)
+- [ビルド時の参照補完機能とベースパスの実装](./article/auto-link)
+- [カスタムテンプレート機能の実装](./article/custom-template-system)
 
 ## 補足：静的サイトジェネレーターとは？
 

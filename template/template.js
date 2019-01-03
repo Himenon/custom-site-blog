@@ -12,8 +12,10 @@ const headerContent = (props) => {
                     React.createElement("a", { href: "https://github.com/Himenon/rocu", className: "btn" }, "Github"))))));
 };
 const mainContent = (props, content) => {
-    return React.createElement("div", { className: "wrapper" },
-        React.createElement("section", null, content));
+    return (React.createElement("div", { className: "wrapper" },
+        React.createElement("section", null,
+            React.createElement("h1", null, props.article.title),
+            content)));
 };
 const wrappedContent = (props, content) => {
     return (React.createElement("body", null,

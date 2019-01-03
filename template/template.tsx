@@ -17,7 +17,14 @@ const headerContent = (props: PageProps): React.ReactElement<any> => {
 }
 
 const mainContent = (props: PageProps, content?: React.ReactNode): React.ReactElement<any> => {
-  return <div className="wrapper"><section>{content}</section></div>
+  return (
+    <div className="wrapper">
+      <section>
+        <h1>{props.article.title}</h1>
+        {content}
+      </section>
+    </div>
+  )
 }
 
 const wrappedContent = (props: PageProps, content?: React.ReactNode): React.ReactElement<any> => {
