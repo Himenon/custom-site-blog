@@ -15,7 +15,7 @@
   "scripts": {
     "start": "run-p server layout",
     "server": "rocu src -Do --base-path rocu-develop-blog --layout ./template/template.js",
-    "build": "rocu src --out-dir docs --base-path rocu-develop-blog",
+    "build": "rocu src --out-dir docs --base-path rocu-develop-blog --layout ./template/template.js",
     "layout": "tsc -w ./template/template.tsx --jsx react --lib esnext --target esnext --module commonjs"
   },
   "repository": {
