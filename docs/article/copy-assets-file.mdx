@@ -1,0 +1,53 @@
+---
+title: ビルド時にファイルをコピーする機構の見直し
+---
+
+PR11で追加しました。
+
+* https://github.com/Himenon/rocu/pull/11
+
+## 選定ライブラリ
+
+再帰的にファイルをコピーでき、フィルタリングできるライブラリとして、[fs-extra](https://www.npmjs.com/package/fs-extra)（[GitHub](https://github.com/jprichardson/node-fs-extra))を使いました。
+[ncp](https://www.npmjs.com/package/ncp)もあったのですが、型定義ファイルが存在しなかったので利用する候補から外れました。
+
+## 実装の話
+
+コピーするときに、ブラウザで利用するであろうファイルをフィルタリングします。
+PR11ではデフォルトで下記の拡張子がホワイトリストに入る形にしました。
+
+```ts
+const ASSET_EXTENSIONS = [".css", ".js", ".png", ".jpeg", ".jpg", ".gif"];
+```
+
+が、実際にリリースして使って見ると、ブラックリスト形式のほうが良さそだな、と思いつつあります。
+
+さて、少しだけ実装で「あぁ、そうか」となったところがあります。filterの条件を書くときに、引数として引数としてコピーもとのpathが飛んできます。
+以下のコードだと`targetPath`に該当します。
+
+```ts
+export const copyAssetFiles = async (src: string, dest: string) => {
+  await fsExtra.copy(src, dest, {
+    filter: (targetPath: string) => {
+      return // targetPathはコピー元のpath
+    },
+    recursive: true,
+  });
+};
+```
+
+最初は飛んでくるものはファイルだろう、と思ってホワイトリストでフィルタリングするコードを入れたら見事に何もコピーされませんでした。
+答えは簡単で、**ディレクトリ**のpathも飛んでくるんですよねこれ。
+
+なので、ディレクトリ、または、ホワイトリストに属するファイルの場合のみコピーするが正しい条件となります。
+
+```ts
+(targetPath: string) => isDirectory(targetPath) || isAssetFile(targetPath)
+```
+
+あぁ、書いていてブラックリスト型式のほうよいな、という気分になりました。多分次のリリースではブラックリスト形式になってます。
+
+## 関連記事
+
+* [次の記事: ビルド時の参照補完機能とベースパスの実装](./auto-link)
+* 前の記事: まだ書いていない
