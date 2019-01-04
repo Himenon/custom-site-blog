@@ -1,43 +1,41 @@
-<html><head lang="js"><title>ビルド時の参照補完機能とベースパスの実装</title><meta charSet="utf-8"/><meta name="keywords" content="静的サイトジェネレーター,NodeJS,React,generator"/><meta name="description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。"/><meta name="copyright" content="@Himenon"/><meta name="viewport" content="initial-scale=1,minimum-scale=0.5,user-scalable=no"/><script src="/custom-site-blog/assets/js/respond.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script><link href="/custom-site-blog/assets/stylesheets/styles.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/pygment_trac.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/prism-cb.css" rel="stylesheet"/></head><body><div id="header"><div class="wrapper"><a href="/custom-site-blog" class="btn">静的サイトジェネレーター開発日誌</a><ul class="nav"><li class="downloads"><a href="https://github.com/Himenon/custom-site" class="btn">Github</a></li></ul></div></div><div class="wrapper"><section><h1>ビルド時の参照補完機能とベースパスの実装</h1><div><p>PR13を出しました。</p><ul><li><a href="https://github.com/Himenon/custom-site/pull/13">https://github.com/Himenon/custom-site/pull/13</a></li></ul><p>今回の新機能実装</p><ol><li>コピー対象のファイルをホワイトリスト形式からブラックリスト形式にする</li><li>デバッグサーバー・ビルド時のベースパスに対応</li><li>aタグのsrc、metaタグのhref、scriptタグのsrcのURLの自動補完機能</li></ol><p>細かいバグフィックス・リファクタリング</p><ol><li>Content-Typeにmime typeを指定</li><li>URLのnormalizeをtransformer以下でしない</li></ol><h2>実装の話</h2><h3>コピー対象のファイルをホワイトリスト形式からブラックリスト形式にする</h3><p><a href="/custom-site-blog/article/copy-assets-file">前回</a>問題になっていたやつですね。ビルド時にフォントのファイルがコピーされずに取り残されてしまって、
+<html><head lang="ja"><title>ビルド時の参照補完機能とベースパスの実装</title><meta charSet="utf-8"/><meta name="keywords" content="静的サイトジェネレーター,NodeJS,React,generator"/><meta name="description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。"/><meta name="copyright" content="@Himenon"/><meta name="viewport" content="initial-scale=1,minimum-scale=0.5,user-scalable=no"/><script src="/custom-site-blog/assets/js/respond.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script><link href="/custom-site-blog/assets/stylesheets/styles.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/pygment_trac.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/prism-cb.css" rel="stylesheet"/></head><body><div id="header"><div class="wrapper"><a href="/custom-site-blog" class="btn">静的サイトジェネレーター開発日誌</a><ul class="nav"><li class="downloads"><a href="https://github.com/Himenon/custom-site" class="btn">Github</a></li></ul></div></div><div class="wrapper"><section><h1>ビルド時の参照補完機能とベースパスの実装</h1><div><p>PR13を出しました。</p><ul><li><a href="https://github.com/Himenon/custom-site/pull/13">https://github.com/Himenon/custom-site/pull/13</a></li></ul><p>今回の新機能実装</p><ol><li>コピー対象のファイルをホワイトリスト形式からブラックリスト形式にする</li><li>デバッグサーバー・ビルド時のベースパスに対応</li><li>aタグのsrc、metaタグのhref、scriptタグのsrcのURLの自動補完機能</li></ol><p>細かいバグフィックス・リファクタリング</p><ol><li>Content-Typeにmime typeを指定</li><li>URLのnormalizeをtransformer以下でしない</li></ol><h2>実装の話</h2><h3>コピー対象のファイルをホワイトリスト形式からブラックリスト形式にする</h3><p><a href="/custom-site-blog/article/copy-assets-file">前回</a>問題になっていたやつですね。ビルド時にフォントのファイルがコピーされずに取り残されてしまって、
 これをホワイトリスト形式で対応していたら数が増えていくばかりなので、ブラックリスト形式に切り替えました。</p><h4>Optionsの見直し</h4><p>その前に、設定ファイル or CLIの引数で引数で自由選択したかったので<code>Option</code>の見直しをしました。
 変数名も<code>opts</code>だったり<code>options</code>だったり<code>options</code>だったりしたので、この際に調整を行いました。</p><p>cliはmeowを使っているのですが、型はおまけ程度のもので、そこまで協力なものありません。なので、<code>any</code>を扱っているような感じで取り扱います。
-設計は次の通りです。</p><pre><code>[CLIからの入力] --&gt; [parser] --&gt; [規格化されたパラメーター]
-</code></pre><p><code>[規格化されたパラメーター]</code>はインターフェースを切っておきます。
-cliの用途は2分できて、<strong>開発用</strong>、<strong>ビルド用</strong>の2つです。（もしかしたら、デプロイ用も出来るかもしれません）</p><pre><code class="language-ts">interface Options {
-  develop?: DevelopOption; // 開発用
-  build?: BuildOption;     // ビルド用
-}
+設計は次の通りです。</p><pre><code></code></pre><p><code>[規格化されたパラメーター]</code>はインターフェースを切っておきます。
+cliの用途は2分できて、<strong>開発用</strong>、<strong>ビルド用</strong>の2つです。（もしかしたら、デプロイ用も出来るかもしれません）</p><pre class="language-ts"><code class="language-ts"><span class="token keyword">interface</span> <span class="token class-name">Options</span> <span class="token punctuation">{</span>
+  develop<span class="token operator">?</span><span class="token punctuation">:</span> DevelopOption<span class="token punctuation">;</span> <span class="token comment">// 開発用</span>
+  build<span class="token operator">?</span><span class="token punctuation">:</span> BuildOption<span class="token punctuation">;</span>     <span class="token comment">// ビルド用</span>
+<span class="token punctuation">}</span>
 </code></pre><p>整理してみると、開発用とビルド用はほとんど同じ設定値を持っていました。
-これを<code>CommonOption</code>として切り出して<code>extends</code>させておきます。</p><pre><code class="language-ts">interface CommonOption {}
+これを<code>CommonOption</code>として切り出して<code>extends</code>させておきます。</p><pre class="language-ts"><code class="language-ts"><span class="token keyword">interface</span> <span class="token class-name">CommonOption</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
 
-interface DevelopOption extends CommonOption {}
+<span class="token keyword">interface</span> <span class="token class-name">DevelopOption</span> <span class="token keyword">extends</span> <span class="token class-name">CommonOption</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
 
-interface BuildOption extends CommonOption {}
+<span class="token keyword">interface</span> <span class="token class-name">BuildOption</span> <span class="token keyword">extends</span> <span class="token class-name">CommonOption</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
 </code></pre><p>また、命名において、複数形と単数形の使い方を<strong>明確</strong>にするようにしました。
 I/Fの<code>Options</code>は<strong>開発用</strong>と<strong>ビルド用</strong>の2つを持っているため、複数に。
 <code>CommonOption</code>、<code>DevelopOption</code>、<code>BuildOption</code>は固有のドメインにおいてのオプションなので単数にしました。
-変数名はI/Fの複数、単数に依存するようにし、略称を使わずに記述するようにしました。</p><pre><code class="language-ts">// bad
-function (opt: BuildOption);
-// good
-function (option: BuildOption);
-</code></pre><pre><code class="language-ts">// bad
-function (opts: Options);
-// good
-function (options: Options);
+変数名はI/Fの複数、単数に依存するようにし、略称を使わずに記述するようにしました。</p><pre class="language-ts"><code class="language-ts"><span class="token comment">// bad</span>
+<span class="token keyword">function</span> <span class="token punctuation">(</span>opt<span class="token punctuation">:</span> BuildOption<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// good</span>
+<span class="token keyword">function</span> <span class="token punctuation">(</span>option<span class="token punctuation">:</span> BuildOption<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre><pre class="language-ts"><code class="language-ts"><span class="token comment">// bad</span>
+<span class="token keyword">function</span> <span class="token punctuation">(</span>opts<span class="token punctuation">:</span> Options<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// good</span>
+<span class="token keyword">function</span> <span class="token punctuation">(</span>options<span class="token punctuation">:</span> Options<span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre><p>他にも組み合わせがあると思いますが、方針はこれで決めです。</p><h4>オプションの優先度</h4><p>外部から指定できるオプションの優先度も決めて置く必要があります。
 外から注入できる方法は3パターンあります。</p><ul><li>cliの引数</li><li>package.jsonの<code>&quot;custom-site&quot;: {}</code>部分</li><li><code>config.json</code></li></ul><p>実装はおいおい見直して行こうかなぁ、という気分ですが、優先度と取扱方法は決めておくことにしました。
-揮発性の高い書き方、ほとの依存度が高くなる場合は利用の優先度を下げていくようにすると</p><pre><code>[CLIの引数] &lt; [package.jsonのcustom-siteパラメータ] &lt; `config.json`
-</code></pre><p>という順番になりました。取り扱い方法は、優先度の高いものが、優先度の低いものをオーバーライドする形式を取りました。
-spread operatorを利用するとこれが一瞬ででき、</p><pre><code class="language-ts">{
-  ...cliOption,
-  ...pkgJsonOption,
-  ...ConfigJsonOption,
-}
+揮発性の高い書き方、ほとの依存度が高くなる場合は利用の優先度を下げていくようにすると</p><pre><code></code></pre><p>という順番になりました。取り扱い方法は、優先度の高いものが、優先度の低いものをオーバーライドする形式を取りました。
+spread operatorを利用するとこれが一瞬ででき、</p><pre class="language-ts"><code class="language-ts"><span class="token punctuation">{</span>
+  <span class="token operator">...</span>cliOption<span class="token punctuation">,</span>
+  <span class="token operator">...</span>pkgJsonOption<span class="token punctuation">,</span>
+  <span class="token operator">...</span>ConfigJsonOption<span class="token punctuation">,</span>
+<span class="token punctuation">}</span>
 </code></pre><p>といった具合に実装したかったのですが、<code>config.json</code>は別の所で管理してしまっていてしまったー、という感じです。
 <code>config.json</code>はheadタグのデフォルト設定値などを取り扱っており、別のPRで修正しようと思います。</p><h4>ブラックリストの実装</h4><p>オプションの整理ができたので、I/Fを信じて実装箇所まで引っ張り回すだけです。
-ブラックリストにも、拡張子やファイル名、正規表現が考えられますが、今回は拡張子のみに対応しました。</p><pre><code class="language-ts">const isNotBlacklistPattern = (src: string, blacklist: CommonOption[&quot;blacklist&quot;]) =&gt; {
-  return !blacklist.extensions.includes(path.extname(src));
-};
+ブラックリストにも、拡張子やファイル名、正規表現が考えられますが、今回は拡張子のみに対応しました。</p><pre class="language-ts"><code class="language-ts"><span class="token keyword">const</span> isNotBlacklistPattern <span class="token operator">=</span> <span class="token punctuation">(</span>src<span class="token punctuation">:</span> <span class="token builtin">string</span><span class="token punctuation">,</span> blacklist<span class="token punctuation">:</span> CommonOption<span class="token punctuation">[</span><span class="token string">"blacklist"</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token operator">!</span>blacklist<span class="token punctuation">.</span>extensions<span class="token punctuation">.</span><span class="token function">includes</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span><span class="token function">extname</span><span class="token punctuation">(</span>src<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 </code></pre><p>ブラックリストに該当しない場合のみ、コピー対象とするようにできました。</p><h3>デバッグサーバー・ビルド時のベースパスに対応</h3><p>Github Pagesにデプロイしてみたところ発覚したんですよね。
 <code>https://example.com</code>の要な場合はPRを入れる前の実装でよかったのですが、
 <code>https://example.com/a/b/c</code>のようにデプロイ先のベースパスが異なる場合はcssやjs、画像、aタグのリンクまで壊れてしまうんです。</p><p>で、ベースパス対応をするようにしました。これが思った以上に手ごわかったです。</p><ul><li>ベースパスのついたURLを内部でローカルディレクトリにあるファイルパスに変換</li><li>静的なウェブサーバーのURL変換に対応<ul><li><code>https://example.com/hoge</code> = <code>https://example.com/hoge/</code> = <code>https://example.com/hoge/index.html</code></li></ul></li><li>ビルド後の成果物内で簡易ウェブサーバーを立ち上げた場合でもちゃんと使えること</li></ul><p>確認する対象がデバッグサーバー、ビルド後の簡易サーバーの2つで挙動を合わせる必要がありました。
@@ -45,22 +43,13 @@ spread operatorを利用するとこれが一瞬ででき、</p><pre><code class
 当初は<code>./</code>から始まる参照を許容していたのですが、次のような理由から、すべての参照は絶対パスで参照するようにししました。</p><ol><li>Markdownから変換されたHTMLファイルのリンクが絶対パス出会ったほうが挙動の確認が明確</li><li>実装が楽になる</li></ol><p>相対パスは脳内で変換しないといけないので、人間がやると間違える！だからレンダラー側で計算してもらおうという魂胆です。</p><p>これを行うにはいくつかのタグ内を書き換える必要があります。
 <code>&lt;meta&gt;</code>、<code>&lt;link&gt;</code>、<code>&lt;script&gt;</code>、<code>&lt;a&gt;</code>が主に利用されているタグですが、
 <code>&lt;head&gt;</code>内にあるか<code>&lt;body&gt;</code>内にあるかで実装方法が異なっていました。</p><h4><code>&lt;head&gt;</code>内にある参照の書き換え</h4><p>文章を書いているファイルのヘッダーの設定値や、<code>config.json</code>などに参照が記述されてるので、
-それらのファイル読み込み語にベースパスを追加するように実装しました。</p><pre><code>[draft.mdx] --&gt; [読み込み] --&gt; [処理] --&gt; [レンダリング]
-[config.json] --&gt; [読み込み] --&gt; [処理] --&gt; [レンダリング]
-</code></pre><p>図は楽ですが実装がやや複雑になってきたのでパイプライン構造にしたい。</p><h4><code>&lt;body&gt;</code>内にある参照の書き換え</h4><p>これはなかなか大変です。が、このジェネレータは簡単です。
-カスタムコンポーネント機能を利用することが可能で、MarkdownからHTMLに変換するときに利用する<code>a</code>タグの変換を自分で定義することが可能です。</p><pre><code class="language-ts">const createBodyContent = transformRawStringToHtml({
-  customComponents: {
-    a: (props: JSX.IntrinsicElements[&quot;a&quot;]): React.Element&lt;any&gt; =&gt; { /* 実装 */ };
-  },
-  props: {},
-});
+それらのファイル読み込み語にベースパスを追加するように実装しました。</p><pre><code></code></pre><p>図は楽ですが実装がやや複雑になってきたのでパイプライン構造にしたい。</p><h4><code>&lt;body&gt;</code>内にある参照の書き換え</h4><p>これはなかなか大変です。が、このジェネレータは簡単です。
+カスタムコンポーネント機能を利用することが可能で、MarkdownからHTMLに変換するときに利用する<code>a</code>タグの変換を自分で定義することが可能です。</p><pre class="language-ts"><code class="language-ts"><span class="token keyword">const</span> createBodyContent <span class="token operator">=</span> <span class="token function">transformRawStringToHtml</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+  customComponents<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+    a<span class="token punctuation">:</span> <span class="token punctuation">(</span>props<span class="token punctuation">:</span> <span class="token constant">JSX</span><span class="token punctuation">.</span>IntrinsicElements<span class="token punctuation">[</span><span class="token string">"a"</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">:</span> React<span class="token punctuation">.</span>Element<span class="token operator">&lt;</span><span class="token builtin">any</span><span class="token operator">></span> <span class="token operator">=></span> <span class="token punctuation">{</span> <span class="token comment">/* 実装 */</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  props<span class="token punctuation">:</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 </code></pre><p>内部の<code>href</code>プロパティに対してベースパスを追加するようにすれば実装が完了です。
-ただし、<code>/^https?/</code>にマッチするようなパターンはそのまま利用するようにしています。</p><p>今回追加した実装によって、Markdown内の書き方がかなり楽になります。</p><pre><code>index.mdx                      [1]
-article/auto-link.mdx          [2]
-article/copy-assets-file.mdx   [3]
-</code></pre><p>とファイルがあった場合、<code>[2]</code>から<code>[1]</code>へ、<code>[2]</code>から<code>[3]</code>へリンクしたい場合</p><pre><code class="language-md">aritcle/auto-link.mdx内
-
-[2 --&gt; 1](../)
-[2 --&gt; 3](./copy-assets-file)
-</code></pre><p>という書き方でレンダリング時に保管されるようになります。つまり、Markdownのファイルツリーからリンクを使えるようになるので、
+ただし、<code>/^https?/</code>にマッチするようなパターンはそのまま利用するようにしています。</p><p>今回追加した実装によって、Markdown内の書き方がかなり楽になります。</p><pre><code></code></pre><p>とファイルがあった場合、<code>[2]</code>から<code>[1]</code>へ、<code>[2]</code>から<code>[3]</code>へリンクしたい場合</p><pre class="language-md"><code class="language-md"></code></pre><p>という書き方でレンダリング時に保管されるようになります。つまり、Markdownのファイルツリーからリンクを使えるようになるので、
 エディターの恩恵(パス補完とか）を受けることが可能となります。</p><p>実際のリンクはこちら</p><ul><li><a href="/custom-site-blog">2 --&gt; 1</a></li><li><a href="/custom-site-blog/article/copy-assets-file">2 --&gt; 3</a></li></ul><h2>次やること</h2><p>次はカスタムテンプレート機能の実装をしていこうと思います。</p><p>どうやろうかな〜。</p><h2>関連記事</h2><ul><li><a href="/custom-site-blog/article/custom-template-system">次の記事: カスタムテンプレート機能の実装</a></li><li><a href="/custom-site-blog/article/copy-assets-file">前の記事: ビルド時にファイルをコピーする機構の見直し</a></li></ul></div></section></div></body></html>

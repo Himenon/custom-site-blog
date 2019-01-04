@@ -1,58 +1,58 @@
-<html><head lang="js"><title>カスタムコンポーネント機能の実装</title><meta charSet="utf-8"/><meta name="keywords" content="静的サイトジェネレーター,NodeJS,React,generator"/><meta name="description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。"/><meta name="copyright" content="@Himenon"/><meta name="viewport" content="initial-scale=1,minimum-scale=0.5,user-scalable=no"/><script src="/custom-site-blog/assets/js/respond.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script><link href="/custom-site-blog/assets/stylesheets/styles.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/pygment_trac.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/prism-cb.css" rel="stylesheet"/></head><body><div id="header"><div class="wrapper"><a href="/custom-site-blog" class="btn">静的サイトジェネレーター開発日誌</a><ul class="nav"><li class="downloads"><a href="https://github.com/Himenon/custom-site" class="btn">Github</a></li></ul></div></div><div class="wrapper"><section><h1>カスタムコンポーネント機能の実装</h1><div><p>PR22で追加しました。</p><ul><li><a href="https://github.com/Himenon/custom-site/pull/22">https://github.com/Himenon/custom-site/pull/22</a></li></ul><p>今回の新機能</p><ol><li>コンポーネント単位のカスタムが可能になりました。</li></ol><h2>実装の話</h2><p>実は<a href="/custom-site-blog/article/custom-template-system">前回</a>の使い回しなので、ほとんど書くことが無いんですよね〜。</p><p>CLIからカスタムコンポーネントのファイルを指定して、vmで実行。
+<html><head lang="ja"><title>カスタムコンポーネント機能の実装</title><meta charSet="utf-8"/><meta name="keywords" content="静的サイトジェネレーター,NodeJS,React,generator"/><meta name="description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。"/><meta name="copyright" content="@Himenon"/><meta name="viewport" content="initial-scale=1,minimum-scale=0.5,user-scalable=no"/><script src="/custom-site-blog/assets/js/respond.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script><link href="/custom-site-blog/assets/stylesheets/styles.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/pygment_trac.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/prism-cb.css" rel="stylesheet"/></head><body><div id="header"><div class="wrapper"><a href="/custom-site-blog" class="btn">静的サイトジェネレーター開発日誌</a><ul class="nav"><li class="downloads"><a href="https://github.com/Himenon/custom-site" class="btn">Github</a></li></ul></div></div><div class="wrapper"><section><h1>カスタムコンポーネント機能の実装</h1><div><p>PR22で追加しました。</p><ul><li><a href="https://github.com/Himenon/custom-site/pull/22">https://github.com/Himenon/custom-site/pull/22</a></li></ul><p>今回の新機能</p><ol><li>コンポーネント単位のカスタムが可能になりました。</li></ol><h2>実装の話</h2><p>実は<a href="/custom-site-blog/article/custom-template-system">前回</a>の使い回しなので、ほとんど書くことが無いんですよね〜。</p><p>CLIからカスタムコンポーネントのファイルを指定して、vmで実行。
 その返り値を<code>&lt;MDXTag&gt;</code>に渡すだけでおしまい。</p><p>型の紹介でもしておきましょう。<a href="https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react/index.d.ts#L2678-L2853">@types/react</a>で定義されている
 <code>JSX.IntrinsicElements</code>を使えばカスタム可能なコンポーネントの一覧を得ることができます。
-それを今回ほしい型に整形して定義しておきます。</p><pre><code class="language-ts">export type CustomComponents = { [P in keyof JSX.IntrinsicElements]?: (props: JSX.IntrinsicElements[P]) =&gt; React.ReactNode };
-</code></pre><p>これを利用することにより、圧倒的に開発が楽になります！</p><p>さて、カスタムコンポーネントが利用できるようになったことで、とても重要な機能が利用できるようになりました。</p><p>それは、<u>Syntax Highlight機能</u>です。しかも、サーバーサイドレンダリングで！</p><p>この記事の執筆当時のカスタムコンポーネントを紹介しましょう。</p><h3>カスタムコンポーネントでSyntax Highlightを実装する</h3><pre><code class="language-ts">// tslint:disable-next-line:no-reference
-/// &lt;reference path=&quot;../node_modules/custom-site/typings/@mdx-js/index.d.ts&quot;/&gt;
+それを今回ほしい型に整形して定義しておきます。</p><pre class="language-ts"><code class="language-ts"><span class="token keyword">export</span> <span class="token keyword">type</span> CustomComponents <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token punctuation">[</span><span class="token constant">P</span> <span class="token keyword">in</span> keyof <span class="token constant">JSX</span><span class="token punctuation">.</span>IntrinsicElements<span class="token punctuation">]</span><span class="token operator">?</span><span class="token punctuation">:</span> <span class="token punctuation">(</span>props<span class="token punctuation">:</span> <span class="token constant">JSX</span><span class="token punctuation">.</span>IntrinsicElements<span class="token punctuation">[</span><span class="token constant">P</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">=></span> React<span class="token punctuation">.</span>ReactNode <span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre><p>これを利用することにより、圧倒的に開発が楽になります！</p><p>さて、カスタムコンポーネントが利用できるようになったことで、とても重要な機能が利用できるようになりました。</p><p>それは、<u>Syntax Highlight機能</u>です。しかも、サーバーサイドレンダリングで！</p><p>この記事の執筆当時のカスタムコンポーネントを紹介しましょう。</p><h3>カスタムコンポーネントでSyntax Highlightを実装する</h3><pre class="language-ts"><code class="language-ts"><span class="token comment">// tslint:disable-next-line:no-reference</span>
+<span class="token comment">/// &lt;reference path="../node_modules/custom-site/typings/@mdx-js/index.d.ts"/></span>
 
-import { CustomComponents } from &quot;@mdx-js/tag&quot;;
-import * as Prism from &quot;prismjs&quot;;
-import * as React from &quot;react&quot;;
+<span class="token keyword">import</span> <span class="token punctuation">{</span> CustomComponents <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">"@mdx-js/tag"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token operator">*</span> <span class="token keyword">as</span> Prism <span class="token keyword">from</span> <span class="token string">"prismjs"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token operator">*</span> <span class="token keyword">as</span> React <span class="token keyword">from</span> <span class="token string">"react"</span><span class="token punctuation">;</span>
 
-/**
+<span class="token comment">/**
  * ハイライトしたい言語のjsファイルを読み込んでおく
- */
-require(&quot;prismjs/components/prism-typescript.min.js&quot;)
+ */</span>
+<span class="token keyword">require</span><span class="token punctuation">(</span><span class="token string">"prismjs/components/prism-typescript.min.js"</span><span class="token punctuation">)</span>
 
-const SUPPORT_LANGUAGES = Object.keys(Prism.languages);
+<span class="token keyword">const</span> <span class="token constant">SUPPORT_LANGUAGES</span> <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>Prism<span class="token punctuation">.</span>languages<span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-const getLanguageDefinition = (lang: string): Prism.LanguageDefinition | null =&gt; {
-  if (SUPPORT_LANGUAGES.includes(lang)) {
-    return Prism.languages[lang];
-  }
-  return null;
-}
+<span class="token keyword">const</span> getLanguageDefinition <span class="token operator">=</span> <span class="token punctuation">(</span>lang<span class="token punctuation">:</span> <span class="token builtin">string</span><span class="token punctuation">)</span><span class="token punctuation">:</span> Prism<span class="token punctuation">.</span>LanguageDefinition <span class="token operator">|</span> <span class="token keyword">null</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">SUPPORT_LANGUAGES</span><span class="token punctuation">.</span><span class="token function">includes</span><span class="token punctuation">(</span>lang<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> Prism<span class="token punctuation">.</span>languages<span class="token punctuation">[</span>lang<span class="token punctuation">]</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
 
-export const customComponents = (): CustomComponents =&gt; {
-  return {
-    pre: props =&gt; &lt;&gt;{ props.children }&lt;/&gt;,
-    code: props =&gt; {
-      const lang = props.className ? props.className.slice(&quot;language-&quot;.length) : &quot;&quot;;
-      const code = typeof props.children === &quot;string&quot; ? props.children : &quot;&quot;;
-      const grammar = getLanguageDefinition(lang);
-      let highlightHtml: string | undefined;
-      if (grammar) {
-        highlightHtml = Prism.highlight(code, grammar);
-      }
-      const newProps: JSX.IntrinsicElements[&quot;code&quot;] = {
-        ...props,
-        children: undefined,
-        dangerouslySetInnerHTML: {
-          __html: highlightHtml
-        }
-      };
-      return (
-      &lt;pre className={props.className}&gt;
-        &lt;code {...newProps} /&gt;
-      &lt;/pre&gt;
-      );
-    },
-  };
-};
+<span class="token keyword">export</span> <span class="token keyword">const</span> customComponents <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">:</span> CustomComponents <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    pre<span class="token punctuation">:</span> props <span class="token operator">=></span> <span class="token operator">&lt;</span><span class="token operator">></span><span class="token punctuation">{</span> props<span class="token punctuation">.</span>children <span class="token punctuation">}</span><span class="token operator">&lt;</span><span class="token operator">/</span><span class="token operator">></span><span class="token punctuation">,</span>
+    code<span class="token punctuation">:</span> props <span class="token operator">=></span> <span class="token punctuation">{</span>
+      <span class="token keyword">const</span> lang <span class="token operator">=</span> props<span class="token punctuation">.</span>className <span class="token operator">?</span> props<span class="token punctuation">.</span>className<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token string">"language-"</span><span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">:</span> <span class="token string">""</span><span class="token punctuation">;</span>
+      <span class="token keyword">const</span> code <span class="token operator">=</span> <span class="token keyword">typeof</span> props<span class="token punctuation">.</span>children <span class="token operator">===</span> <span class="token string">"string"</span> <span class="token operator">?</span> props<span class="token punctuation">.</span>children <span class="token punctuation">:</span> <span class="token string">""</span><span class="token punctuation">;</span>
+      <span class="token keyword">const</span> grammar <span class="token operator">=</span> <span class="token function">getLanguageDefinition</span><span class="token punctuation">(</span>lang<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">let</span> highlightHtml<span class="token punctuation">:</span> <span class="token builtin">string</span> <span class="token operator">|</span> undefined<span class="token punctuation">;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>grammar<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+        highlightHtml <span class="token operator">=</span> Prism<span class="token punctuation">.</span><span class="token function">highlight</span><span class="token punctuation">(</span>code<span class="token punctuation">,</span> grammar<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token punctuation">}</span>
+      <span class="token keyword">const</span> newProps<span class="token punctuation">:</span> <span class="token constant">JSX</span><span class="token punctuation">.</span>IntrinsicElements<span class="token punctuation">[</span><span class="token string">"code"</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+        <span class="token operator">...</span>props<span class="token punctuation">,</span>
+        children<span class="token punctuation">:</span> undefined<span class="token punctuation">,</span>
+        dangerouslySetInnerHTML<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+          __html<span class="token punctuation">:</span> highlightHtml
+        <span class="token punctuation">}</span>
+      <span class="token punctuation">}</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token punctuation">(</span>
+      <span class="token operator">&lt;</span>pre className<span class="token operator">=</span><span class="token punctuation">{</span>props<span class="token punctuation">.</span>className<span class="token punctuation">}</span><span class="token operator">></span>
+        <span class="token operator">&lt;</span>code <span class="token punctuation">{</span><span class="token operator">...</span>newProps<span class="token punctuation">}</span> <span class="token operator">/</span><span class="token operator">></span>
+      <span class="token operator">&lt;</span><span class="token operator">/</span>pre<span class="token operator">></span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 </code></pre><h4>シンタックスハイライト ライブラリ</h4><p>Syntax Highlightのライブラリとして、<a href="https://github.com/PrismJS/prism">PrismJS</a>を利用するようにしました。
-<a href="https://github.com/highlightjs/highlight.js">highlight.js</a>という選択肢もあったのですが、導入から使いやすさ、拡張性からPrismJSを使用することにしました。</p><p>他にも、PrismJSは次のようなことができます。（highlightjsにもあるかもしれませんが）</p><ul><li>CSSでテーマをすぐに切り替えることが出来る。<ul><li><a href="https://github.com/PrismJS/prism-themes">https://github.com/PrismJS/prism-themes</a>に転がってる</li></ul></li><li>拡張がしやすそうである、ということが目に見える<ul><li>pluginが作れる: <a href="https://prismjs.com/extending.html#writing-plugins">https://prismjs.com/extending.html#writing-plugins</a></li><li>言語サポートを(やろうと思えば)増やせる：<a href="https://prismjs.com/extending.html#language-definitions">https://prismjs.com/extending.html#language-definitions</a></li></ul></li></ul><h4>カスタムコンポーネントでライブラリの要求する構造を作る</h4><p>PrismJSは次のような構造を求めます。（主にCSS）</p><pre><code class="language-html">&lt;pre class=&quot;language-*&quot;&gt;
-  &lt;code class=&quot;language-*&quot;&gt;/* コード本体 */&lt;/code&gt;
-&lt;/pre&gt;
+<a href="https://github.com/highlightjs/highlight.js">highlight.js</a>という選択肢もあったのですが、導入から使いやすさ、拡張性からPrismJSを使用することにしました。</p><p>他にも、PrismJSは次のようなことができます。（highlightjsにもあるかもしれませんが）</p><ul><li>CSSでテーマをすぐに切り替えることが出来る。<ul><li><a href="https://github.com/PrismJS/prism-themes">https://github.com/PrismJS/prism-themes</a>に転がってる</li></ul></li><li>拡張がしやすそうである、ということが目に見える<ul><li>pluginが作れる: <a href="https://prismjs.com/extending.html#writing-plugins">https://prismjs.com/extending.html#writing-plugins</a></li><li>言語サポートを(やろうと思えば)増やせる：<a href="https://prismjs.com/extending.html#language-definitions">https://prismjs.com/extending.html#language-definitions</a></li></ul></li></ul><h4>カスタムコンポーネントでライブラリの要求する構造を作る</h4><p>PrismJSは次のような構造を求めます。（主にCSS）</p><pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>pre</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>language-*<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+  <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>code</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>language-*<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>/* コード本体 */<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>code</span><span class="token punctuation">></span></span>
+<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>pre</span><span class="token punctuation">></span></span>
 </code></pre><p>Markdownで与える情報は限定的なものなので、<code>&lt;pre&gt;</code>タグと<code>&lt;code&gt;</code>タグの両方に同時に同じ
 classNameを与えるには何かしらの手を加える必要があります。</p><p>カスタムコンポーネントを利用すると、これが一瞬で実現できます。
 どうやるかというと、<code>&lt;pre&gt;</code>の生成はスキップして、<code>&lt;code&gt;</code>の中で同時に<code>&lt;pre&gt;</code>を作ってしまえばよい、という発想です。

@@ -1,31 +1,31 @@
-<html><head lang="js"><title>カスタムテンプレート機能の実装</title><meta charSet="utf-8"/><meta name="keywords" content="静的サイトジェネレーター,NodeJS,React,generator"/><meta name="description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。"/><meta name="copyright" content="@Himenon"/><meta name="viewport" content="initial-scale=1,minimum-scale=0.5,user-scalable=no"/><script src="/custom-site-blog/assets/js/respond.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script><link href="/custom-site-blog/assets/stylesheets/styles.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/pygment_trac.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/prism-cb.css" rel="stylesheet"/></head><body><div id="header"><div class="wrapper"><a href="/custom-site-blog" class="btn">静的サイトジェネレーター開発日誌</a><ul class="nav"><li class="downloads"><a href="https://github.com/Himenon/custom-site" class="btn">Github</a></li></ul></div></div><div class="wrapper"><section><h1>カスタムテンプレート機能の実装</h1><div><p>これまた<a href="/custom-site-blog/article/auto-link">前回</a>最後に課題にしていたことを実装しました。</p><p>PR20に差分があります。</p><ul><li><a href="https://github.com/Himenon/custom-site/pull/20">https://github.com/Himenon/custom-site/pull/20</a></li></ul><p>今回の新機能実装</p><ol><li>body内のコンテンツに対してカスタムテンプレートを使えるように！</li><li>カスタムテンプレートがジェネレーターからいろいろなサイトやページの情報を含んだパラメーターを受け取ることができるように。型付きで！（重要）</li></ol><p>カスタムテンプレートが使えるようになったので、このブログも見た目が大幅に更新！</p><ul><li>Before
+<html><head lang="ja"><title>カスタムテンプレート機能の実装</title><meta charSet="utf-8"/><meta name="keywords" content="静的サイトジェネレーター,NodeJS,React,generator"/><meta name="description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。"/><meta name="copyright" content="@Himenon"/><meta name="viewport" content="initial-scale=1,minimum-scale=0.5,user-scalable=no"/><script src="/custom-site-blog/assets/js/respond.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script><link href="/custom-site-blog/assets/stylesheets/styles.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/pygment_trac.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/prism-cb.css" rel="stylesheet"/></head><body><div id="header"><div class="wrapper"><a href="/custom-site-blog" class="btn">静的サイトジェネレーター開発日誌</a><ul class="nav"><li class="downloads"><a href="https://github.com/Himenon/custom-site" class="btn">Github</a></li></ul></div></div><div class="wrapper"><section><h1>カスタムテンプレート機能の実装</h1><div><p>これまた<a href="/custom-site-blog/article/auto-link">前回</a>最後に課題にしていたことを実装しました。</p><p>PR20に差分があります。</p><ul><li><a href="https://github.com/Himenon/custom-site/pull/20">https://github.com/Himenon/custom-site/pull/20</a></li></ul><p>今回の新機能実装</p><ol><li>body内のコンテンツに対してカスタムテンプレートを使えるように！</li><li>カスタムテンプレートがジェネレーターからいろいろなサイトやページの情報を含んだパラメーターを受け取ることができるように。型付きで！（重要）</li></ol><p>カスタムテンプレートが使えるようになったので、このブログも見た目が大幅に更新！</p><ul><li>Before
 <img src="/custom-site-blog/article/images/2019-01-03-before.png" alt="Before"/></li><li>After
-<img src="/custom-site-blog/article/images/2019-01-03-after.png" alt="After"/></li></ul><p>タイトルが変わったとか、書いている内容が変わったとか、そーいうのじゃないので。</p><h2>実装の話</h2><p>今回は使ってるAPIからなかなか面白かったです。ブレイクスルーした気持ちよさがあった実装回でした。</p><h3>カスタムテンプレート機能の実装</h3><p>ググってみると出てくるもんです。</p><ul><li><a href="https://gist.github.com/KOBA789/752707">https://gist.github.com/KOBA789/752707</a></li></ul><p>8年前の投稿ですが、現在(v11.6.0)のAPIにも(多少変化はあったものの）ありました。</p><ul><li><a href="https://nodejs.org/api/vm.html">https://nodejs.org/api/vm.html</a></li></ul><p>実装自体はそんなに長くなくて、こんな感じです。</p><pre><code class="language-ts">import * as fs from &quot;fs&quot;;
-import * as vm from &quot;vm&quot;;
+<img src="/custom-site-blog/article/images/2019-01-03-after.png" alt="After"/></li></ul><p>タイトルが変わったとか、書いている内容が変わったとか、そーいうのじゃないので。</p><h2>実装の話</h2><p>今回は使ってるAPIからなかなか面白かったです。ブレイクスルーした気持ちよさがあった実装回でした。</p><h3>カスタムテンプレート機能の実装</h3><p>ググってみると出てくるもんです。</p><ul><li><a href="https://gist.github.com/KOBA789/752707">https://gist.github.com/KOBA789/752707</a></li></ul><p>8年前の投稿ですが、現在(v11.6.0)のAPIにも(多少変化はあったものの）ありました。</p><ul><li><a href="https://nodejs.org/api/vm.html">https://nodejs.org/api/vm.html</a></li></ul><p>実装自体はそんなに長くなくて、こんな感じです。</p><pre class="language-ts"><code class="language-ts"><span class="token keyword">import</span> <span class="token operator">*</span> <span class="token keyword">as</span> fs <span class="token keyword">from</span> <span class="token string">"fs"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token operator">*</span> <span class="token keyword">as</span> vm <span class="token keyword">from</span> <span class="token string">"vm"</span><span class="token punctuation">;</span>
 
-export const loadExternalFunction = &lt;T&gt;(filename: string): T | undefined =&gt; {
-  // ここでexportsとrequireをsandboxに提供して置かなければ、内部でエラーになる
-  const sandbox: vm.Context = vm.createContext({
-    exports,
-    require,
-  });
-  // 実行したいjsファイルの読み込み
-  const data = fs.readFileSync(filename, { encoding: &quot;utf-8&quot; });
+<span class="token keyword">export</span> <span class="token keyword">const</span> loadExternalFunction <span class="token operator">=</span> <span class="token operator">&lt;</span><span class="token constant">T</span><span class="token operator">></span><span class="token punctuation">(</span>filename<span class="token punctuation">:</span> <span class="token builtin">string</span><span class="token punctuation">)</span><span class="token punctuation">:</span> <span class="token constant">T</span> <span class="token operator">|</span> undefined <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token comment">// ここでexportsとrequireをsandboxに提供して置かなければ、内部でエラーになる</span>
+  <span class="token keyword">const</span> sandbox<span class="token punctuation">:</span> vm<span class="token punctuation">.</span>Context <span class="token operator">=</span> vm<span class="token punctuation">.</span><span class="token function">createContext</span><span class="token punctuation">(</span><span class="token punctuation">{</span>
+    exports<span class="token punctuation">,</span>
+    <span class="token keyword">require</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token comment">// 実行したいjsファイルの読み込み</span>
+  <span class="token keyword">const</span> data <span class="token operator">=</span> fs<span class="token punctuation">.</span><span class="token function">readFileSync</span><span class="token punctuation">(</span>filename<span class="token punctuation">,</span> <span class="token punctuation">{</span> encoding<span class="token punctuation">:</span> <span class="token string">"utf-8"</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
 
-  if (typeof data !== &quot;string&quot;) {
-    return;
-  }
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> data <span class="token operator">!==</span> <span class="token string">"string"</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
 
-  try {
-    const script = new vm.Script(data, { displayErrors: true });
-    script.runInNewContext(sandbox, { displayErrors: true });
-  } catch (e) {
-    console.error(`&quot;${filename}&quot; include below error.`);
-    console.error(e);
-  }
-  // exportsされている定義を返す
-  return sandbox.exports;
-};
+  <span class="token keyword">try</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> script <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">vm<span class="token punctuation">.</span>Script</span><span class="token punctuation">(</span>data<span class="token punctuation">,</span> <span class="token punctuation">{</span> displayErrors<span class="token punctuation">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    script<span class="token punctuation">.</span><span class="token function">runInNewContext</span><span class="token punctuation">(</span>sandbox<span class="token punctuation">,</span> <span class="token punctuation">{</span> displayErrors<span class="token punctuation">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span><span class="token class-name">e</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token builtin">console</span><span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span><span class="token template-string"><span class="token string">`"</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>filename<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">" include below error.`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token builtin">console</span><span class="token punctuation">.</span><span class="token function">error</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token comment">// exportsされている定義を返す</span>
+  <span class="token keyword">return</span> sandbox<span class="token punctuation">.</span>exports<span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
 </code></pre><p>これで外部のjsファイルを読み込んで実行することが可能となりました。
 ただ、バリデーションなどのチェック機構はなく、現状はI/Fを信じるのみです。</p><hr/><p>他に見つけたもの。</p><ul><li><a href="https://github.com/patriksimek/vm2">https://github.com/patriksimek/vm2</a></li></ul><p>TypeScript + Node + vm 的な検索をかけたけど、これしか引っかからなかった。
 知らないけど多ラッパーなので、直に生えているAPIを優先して使うことにしました。</p><h3>PagePropsの作成</h3><p>カスタムテンプレートを使うとなると、サイト自体の周辺情報が欲しくなるんですよね。

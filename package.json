@@ -18,7 +18,7 @@
     "start": "npm run prebuild && run-p server build:*:watch",
     "prebuild": "run-p build:*",
     "server": "custom-site src -Do --base-path custom-site-blog --layout ./template/template.js --components ./components/components.js",
-    "build": "custom-site src --out-dir docs --base-path custom-site-blog --layout ./template/template.js",
+    "build": "custom-site src --out-dir docs --base-path custom-site-blog --layout ./template/template.js --components ./components/components.js",
     "build:template": "tsc ./template/template.tsx --jsx react --lib esnext --target esnext --module commonjs",
     "build:components": "tsc ./components/components.tsx --jsx react --lib esnext --target esnext --module commonjs",
     "build:template:watch": "npm run build:template -- --watch",
