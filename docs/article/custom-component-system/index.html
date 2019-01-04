@@ -1,0 +1,63 @@
+<html><head lang="js"><title>カスタムコンポーネント機能の実装</title><meta charSet="utf-8"/><meta name="keywords" content="静的サイトジェネレーター,NodeJS,React,generator"/><meta name="description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。"/><meta name="copyright" content="@Himenon"/><meta name="viewport" content="initial-scale=1,minimum-scale=0.5,user-scalable=no"/><script src="/custom-site-blog/assets/js/respond.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script><link href="/custom-site-blog/assets/stylesheets/styles.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/pygment_trac.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/prism-cb.css" rel="stylesheet"/></head><body><div id="header"><div class="wrapper"><a href="/custom-site-blog" class="btn">静的サイトジェネレーター開発日誌</a><ul class="nav"><li class="downloads"><a href="https://github.com/Himenon/custom-site" class="btn">Github</a></li></ul></div></div><div class="wrapper"><section><h1>カスタムコンポーネント機能の実装</h1><div><p>PR22で追加しました。</p><ul><li><a href="https://github.com/Himenon/custom-site/pull/22">https://github.com/Himenon/custom-site/pull/22</a></li></ul><p>今回の新機能</p><ol><li>コンポーネント単位のカスタムが可能になりました。</li></ol><h2>実装の話</h2><p>実は<a href="/custom-site-blog/article/custom-template-system">前回</a>の使い回しなので、ほとんど書くことが無いんですよね〜。</p><p>CLIからカスタムコンポーネントのファイルを指定して、vmで実行。
+その返り値を<code>&lt;MDXTag&gt;</code>に渡すだけでおしまい。</p><p>型の紹介でもしておきましょう。<a href="https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react/index.d.ts#L2678-L2853">@types/react</a>で定義されている
+<code>JSX.IntrinsicElements</code>を使えばカスタム可能なコンポーネントの一覧を得ることができます。
+それを今回ほしい型に整形して定義しておきます。</p><pre><code class="language-ts">export type CustomComponents = { [P in keyof JSX.IntrinsicElements]?: (props: JSX.IntrinsicElements[P]) =&gt; React.ReactNode };
+</code></pre><p>これを利用することにより、圧倒的に開発が楽になります！</p><p>さて、カスタムコンポーネントが利用できるようになったことで、とても重要な機能が利用できるようになりました。</p><p>それは、<u>Syntax Highlight機能</u>です。しかも、サーバーサイドレンダリングで！</p><p>この記事の執筆当時のカスタムコンポーネントを紹介しましょう。</p><h3>カスタムコンポーネントでSyntax Highlightを実装する</h3><pre><code class="language-ts">// tslint:disable-next-line:no-reference
+/// &lt;reference path=&quot;../node_modules/custom-site/typings/@mdx-js/index.d.ts&quot;/&gt;
+
+import { CustomComponents } from &quot;@mdx-js/tag&quot;;
+import * as Prism from &quot;prismjs&quot;;
+import * as React from &quot;react&quot;;
+
+/**
+ * ハイライトしたい言語のjsファイルを読み込んでおく
+ */
+require(&quot;prismjs/components/prism-typescript.min.js&quot;)
+
+const SUPPORT_LANGUAGES = Object.keys(Prism.languages);
+
+const getLanguageDefinition = (lang: string): Prism.LanguageDefinition | null =&gt; {
+  if (SUPPORT_LANGUAGES.includes(lang)) {
+    return Prism.languages[lang];
+  }
+  return null;
+}
+
+export const customComponents = (): CustomComponents =&gt; {
+  return {
+    pre: props =&gt; &lt;&gt;{ props.children }&lt;/&gt;,
+    code: props =&gt; {
+      const lang = props.className ? props.className.slice(&quot;language-&quot;.length) : &quot;&quot;;
+      const code = typeof props.children === &quot;string&quot; ? props.children : &quot;&quot;;
+      const grammar = getLanguageDefinition(lang);
+      let highlightHtml: string | undefined;
+      if (grammar) {
+        highlightHtml = Prism.highlight(code, grammar);
+      }
+      const newProps: JSX.IntrinsicElements[&quot;code&quot;] = {
+        ...props,
+        children: undefined,
+        dangerouslySetInnerHTML: {
+          __html: highlightHtml
+        }
+      };
+      return (
+      &lt;pre className={props.className}&gt;
+        &lt;code {...newProps} /&gt;
+      &lt;/pre&gt;
+      );
+    },
+  };
+};
+</code></pre><h4>シンタックスハイライト ライブラリ</h4><p>Syntax Highlightのライブラリとして、<a href="https://github.com/PrismJS/prism">PrismJS</a>を利用するようにしました。
+<a href="https://github.com/highlightjs/highlight.js">highlight.js</a>という選択肢もあったのですが、導入から使いやすさ、拡張性からPrismJSを使用することにしました。</p><p>他にも、PrismJSは次のようなことができます。（highlightjsにもあるかもしれませんが）</p><ul><li>CSSでテーマをすぐに切り替えることが出来る。<ul><li><a href="https://github.com/PrismJS/prism-themes">https://github.com/PrismJS/prism-themes</a>に転がってる</li></ul></li><li>拡張がしやすそうである、ということが目に見える<ul><li>pluginが作れる: <a href="https://prismjs.com/extending.html#writing-plugins">https://prismjs.com/extending.html#writing-plugins</a></li><li>言語サポートを(やろうと思えば)増やせる：<a href="https://prismjs.com/extending.html#language-definitions">https://prismjs.com/extending.html#language-definitions</a></li></ul></li></ul><h4>カスタムコンポーネントでライブラリの要求する構造を作る</h4><p>PrismJSは次のような構造を求めます。（主にCSS）</p><pre><code class="language-html">&lt;pre class=&quot;language-*&quot;&gt;
+  &lt;code class=&quot;language-*&quot;&gt;/* コード本体 */&lt;/code&gt;
+&lt;/pre&gt;
+</code></pre><p>Markdownで与える情報は限定的なものなので、<code>&lt;pre&gt;</code>タグと<code>&lt;code&gt;</code>タグの両方に同時に同じ
+classNameを与えるには何かしらの手を加える必要があります。</p><p>カスタムコンポーネントを利用すると、これが一瞬で実現できます。
+どうやるかというと、<code>&lt;pre&gt;</code>の生成はスキップして、<code>&lt;code&gt;</code>の中で同時に<code>&lt;pre&gt;</code>を作ってしまえばよい、という発想です。
+そしたら、<code>&lt;code&gt;</code>のみに与えられるはずだったclassNameを<code>&lt;pre&gt;</code>の方にも与えてしまえば、あら不思議！できあがり！</p><p>おわり！最高ですね！</p><p>ああああああーーー僕はこれがやりたかったんだああああああああ！！！！！！</p><h4>サーバーレンダリングの恩恵</h4><p>JavaScriptをOFFにしてこのページを見てください！シンタクスハイライト付くんですよ！
+これが<strong>静的サイト</strong>だ！という感じですよね！クライアントのJSの力でハイライトをつけるなんてリッチなこと<del>リソースの無駄</del>したくないし、
+ブラウザごとの差異なんで気にしたくないので、最高ですねぇ。SPAでもないのでこれで十分！！！！</p><h2>次やること</h2><p>カスタムコンポーネント機能、雑に作ったけど、シンタックスハイライトを手に入れることが出来る強力な新機能でした〜！</p><p>次はGoogle Analyticsを先に入れましょう。どれくらい見られてるのかわからないのでね...!
+その次はー、ファイルから作成日と、更新日の取得あたりかな〜
+その次は〜、実験的に挑戦してみたい機能があるのでそれかな。</p><p>その前に、次の記事はパッケージ名変更の記事です（同じに日に書いたので言える）</p><h2>関連記事</h2><ul><li><a href="/custom-site-blog/article/change-package-name-to-custom-site">次の記事: パッケージ名を変更しました</a></li><li><a href="/custom-site-blog/article/custom-template-system">前の記事: カスタムテンプレート機能の実装</a></li></ul></div></section></div></body></html>
