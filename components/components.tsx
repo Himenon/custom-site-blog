@@ -6,7 +6,7 @@ import * as Prism from "prismjs";
 import * as React from "react";
 
 /**
- * ハイライトするコードをrequireしておく
+ * ハイライトしたい言語のjsファイルを読み込んでおく
  */
 require("prismjs/components/prism-typescript.min.js")
 

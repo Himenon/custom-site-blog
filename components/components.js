@@ -5,7 +5,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const Prism = require("prismjs");
 const React = require("react");
 /**
- * ハイライトするコードをrequireしておく
+ * ハイライトしたい言語のjsファイルを読み込んでおく
  */
 require("prismjs/components/prism-typescript.min.js");
 const SUPPORT_LANGUAGES = Object.keys(Prism.languages);
