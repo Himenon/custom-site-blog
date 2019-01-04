@@ -1,5 +1,5 @@
 {
-  "name": "rocu-develop-blog",
+  "name": "custom-site-blog",
   "version": "1.0.0",
   "description": "静的サイトジェネレーター開発日誌",
   "main": "index.js",
@@ -9,23 +9,23 @@
     "@types/react": "^16.7.18",
     "npm-run-all": "^4.1.5",
     "react": "^16.7.0",
-    "rocu": "^0.0.8",
+    "custom-site": "^0.1.0",
     "typescript": "^3.2.2"
   },
   "scripts": {
     "start": "run-p server layout",
-    "server": "rocu src -Do --base-path rocu-develop-blog --layout ./template/template.js",
-    "build": "rocu src --out-dir docs --base-path rocu-develop-blog --layout ./template/template.js",
+    "server": "custom-site src -Do --base-path custom-site-blog --layout ./template/template.js",
+    "build": "custom-site src --out-dir docs --base-path custom-site-blog --layout ./template/template.js",
     "layout": "tsc -w ./template/template.tsx --jsx react --lib esnext --target esnext --module commonjs"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Himenon/rocu-develop-blog.git"
+    "url": "git+https://github.com/Himenon/custom-site-blog.git"
   },
   "author": "Himenon",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Himenon/rocu-develop-blog/issues"
+    "url": "https://github.com/Himenon/custom-site-blog/issues"
   },
-  "homepage": "https://github.com/Himenon/rocu-develop-blog#readme"
+  "homepage": "https://github.com/Himenon/custom-site-blog#readme"
 }

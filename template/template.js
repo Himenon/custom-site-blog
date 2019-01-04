@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // tslint:disable-next-line:no-reference
-/// <reference path="../node_modules/rocu//typings/@rocu/index.d.ts" />
+/// <reference path="../node_modules/custom-site//typings/@custom-site/index.d.ts" />
 const React = require("react");
 const headerContent = (props) => {
     return (React.createElement("div", { id: "header" },
@@ -9,7 +9,7 @@ const headerContent = (props) => {
             React.createElement("a", { href: props.site.url.relativePath, className: "btn" }, props.site.title),
             React.createElement("ul", { className: "nav" },
                 React.createElement("li", { className: "downloads" },
-                    React.createElement("a", { href: "https://github.com/Himenon/rocu", className: "btn" }, "Github"))))));
+                    React.createElement("a", { href: "https://github.com/Himenon/custom-site", className: "btn" }, "Github"))))));
 };
 const mainContent = (props, content) => {
     return (React.createElement("div", { className: "wrapper" },

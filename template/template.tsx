@@ -1,7 +1,7 @@
 // tslint:disable-next-line:no-reference
-/// <reference path="../node_modules/rocu//typings/@rocu/index.d.ts" />
+/// <reference path="../node_modules/custom-site//typings/@custom-site/index.d.ts" />
 import * as React from "react";
-import { PageProps } from "@rocu/page";
+import { PageProps } from "@custom-site/page";
 
 const headerContent = (props: PageProps): React.ReactElement<any> => {
   return (
@@ -9,7 +9,7 @@ const headerContent = (props: PageProps): React.ReactElement<any> => {
     <div className="wrapper">
       <a href={props.site.url.relativePath} className="btn">{props.site.title}</a>
       <ul className="nav">
-        <li className="downloads"><a href="https://github.com/Himenon/rocu" className="btn">Github</a></li>
+        <li className="downloads"><a href="https://github.com/Himenon/custom-site" className="btn">Github</a></li>
       </ul>
     </div>
   </div>
