@@ -30,6 +30,9 @@ export const customComponents = (): CustomComponents => {
       if (grammar) {
         highlightHtml = Prism.highlight(code, grammar);
       }
+      if (!lang || !grammar) {
+        return <pre><code {...props} /></pre>;
+      }
       const newProps: JSX.IntrinsicElements["code"] = {
         ...props,
         children: undefined,
