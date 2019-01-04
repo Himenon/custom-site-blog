@@ -22,7 +22,7 @@
   },
   "build": {
     "blacklist": {
-      "extensions": [".html", ".json"]
+      "extensions": [".html", ".json", ".mdx"]
     }
   }
 }
