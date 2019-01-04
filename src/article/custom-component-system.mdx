@@ -1,0 +1,33 @@
+---
+title: カスタムコンポーネント機能の実装
+---
+
+PR22で追加しました。
+
+* https://github.com/Himenon/custom-site/pull/22
+
+今回の新機能
+
+1. コンポーネント単位のカスタムが可能になりました。
+
+## 実装の話
+
+実は[前回](./custom-template-system)の使い回しなので、ほとんど書くことが無いんですよね〜。
+
+CLIからカスタムコンポーネントのファイルを指定して、vmで実行。
+その返り値を`<MDXTag>`に渡すだけでおしまい。
+
+型の紹介でもしておきましょう。[@types/react](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react/index.d.ts#L2678-L2853)で定義されている
+`JSX.IntrinsicElements`を使えばカスタム可能なコンポーネントの一覧を得ることができます。
+それを今回ほしい型に整形して定義しておきます。
+
+```ts
+export type CustomComponents = { [P in keyof JSX.IntrinsicElements]?: (props: JSX.IntrinsicElements[P]) => React.ReactNode };
+```
+
+これを利用することにより、圧倒的に開発が楽になります！
+
+## 関連記事
+
+* [次の記事: パッケージ名を変更しました](./change-package-name-to-custom-site)
+* [前の記事: カスタムテンプレート機能の実装](./custom-template-system)
