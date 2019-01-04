@@ -16,7 +16,8 @@
     ],
     "css": [
       "/assets/stylesheets/styles.css",
-      "/assets/stylesheets/pygment_trac.css"
+      "/assets/stylesheets/pygment_trac.css",
+      "/assets/stylesheets/prism-cb.css"
     ]
   },
   "build": {

@@ -6,10 +6,12 @@
   "dependencies": {},
   "devDependencies": {
     "@types/node": "^10.12.18",
+    "@types/prismjs": "^1.9.0",
     "@types/react": "^16.7.18",
-    "npm-run-all": "^4.1.5",
-    "react": "^16.7.0",
     "custom-site": "^0.1.0",
+    "npm-run-all": "^4.1.5",
+    "prismjs": "^1.15.0",
+    "react": "^16.7.0",
     "typescript": "^3.2.2"
   },
   "scripts": {
@@ -19,8 +21,8 @@
     "build": "custom-site src --out-dir docs --base-path custom-site-blog --layout ./template/template.js",
     "build:template": "tsc ./template/template.tsx --jsx react --lib esnext --target esnext --module commonjs",
     "build:components": "tsc ./components/components.tsx --jsx react --lib esnext --target esnext --module commonjs",
-    "build:template:watch": "tsc ./template/template.tsx --jsx react --lib esnext --target esnext --module commonjs",
-    "build:components:watch": "tsc ./components/components.tsx --jsx react --lib esnext --target esnext --module commonjs"
+    "build:template:watch": "npm run build:template -- --watch",
+    "build:components:watch": "npm run build:components -- --watch"
   },
   "repository": {
     "type": "git",
