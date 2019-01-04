@@ -3,14 +3,22 @@
 ## 日誌を書く方法
 
 ```bash
-git clone https://github.com/Himenon/rocu-develop-blog.git
-cd ./rocu-develop-blog
-npm i
-npm start
+git clone https://github.com/Himenon/custom-site-blog.git
+cd ./custom-site-blog
+yarn install
+yarn start
 ```
 
 ## git pushする前
 
 ```bash
-npm run build
+yarn run build
 ```
+
+## Licence 
+
+MIT
+
+## Author
+
+@Himenon
