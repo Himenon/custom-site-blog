@@ -1,5 +1,5 @@
 // tslint:disable-next-line:no-reference
-/// <reference path="../node_modules/custom-site//typings/@custom-site/index.d.ts" />
+/// <reference path="../node_modules/@custom-site/custom-site//typings/@custom-site/index.d.ts" />
 import * as React from "react";
 import { PageProps } from "@custom-site/page";
 

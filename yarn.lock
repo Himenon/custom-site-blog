@@ -168,6 +168,35 @@
     lodash "^4.17.10"
     to-fast-properties "^2.0.0"
 
+"@custom-site/custom-site@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@custom-site/custom-site/-/custom-site-0.1.2.tgz#b7a7061aaff441298c12901d954e820daa4cd300"
+  integrity sha512-b0SkaMK8O9KmBLMuYYid6Lwnc9XnH1/1pkK8kKK3oLk6i13sUbF3HDshfKCcComIgsVsE2foWzM/X5zJhQ1bjQ==
+  dependencies:
+    "@babel/core" "^7.1.6"
+    "@babel/plugin-proposal-object-rest-spread" "^7.0.0"
+    "@babel/plugin-transform-react-jsx" "^7.1.6"
+    "@babel/standalone" "^7.1.0"
+    "@mdx-js/mdx" "^0.16.0"
+    "@mdx-js/tag" "^0.16.0"
+    chalk "^2.4.1"
+    chokidar "^2.0.4"
+    dot-prop "^4.2.0"
+    fs-extra "^7.0.1"
+    gray-matter "^4.0.1"
+    load-json-file "^5.1.0"
+    meow "^5.0.0"
+    mime-types "^2.1.21"
+    opn "^5.4.0"
+    portfinder "^1.0.19"
+    react "^16.6.3"
+    react-dom "^16.6.3"
+    read-pkg "^4.0.1"
+    read-pkg-up "^4.0.0"
+    recursive-readdir "^2.2.2"
+    update-notifier "^2.5.0"
+    ws "^6.1.2"
+
 "@mdx-js/mdx@^0.16.0":
   version "0.16.6"
   resolved "https://registry.yarnpkg.com/@mdx-js/mdx/-/mdx-0.16.6.tgz#9b9ea113bcfc0945ec48f17db7aceb63e604c2a7"
@@ -699,35 +728,6 @@ currently-unhandled@^0.4.1:
   integrity sha1-mI3zP+qxke95mmE2nddsF635V+o=
   dependencies:
     array-find-index "^1.0.1"
-
-custom-site@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/custom-site/-/custom-site-0.1.0.tgz#f3c9f42f419c0b1abce36ce0cce47586ba5a2e3f"
-  integrity sha512-LKSKzM3b5feADcCXCEaC4B9w75eM9jtX+KEGzQBREmc5EjyhR7DO6wFMTX9byJ7H8pR+O9BEKZM5kzR7ggziPg==
-  dependencies:
-    "@babel/core" "^7.1.6"
-    "@babel/plugin-proposal-object-rest-spread" "^7.0.0"
-    "@babel/plugin-transform-react-jsx" "^7.1.6"
-    "@babel/standalone" "^7.1.0"
-    "@mdx-js/mdx" "^0.16.0"
-    "@mdx-js/tag" "^0.16.0"
-    chalk "^2.4.1"
-    chokidar "^2.0.4"
-    dot-prop "^4.2.0"
-    fs-extra "^7.0.1"
-    gray-matter "^4.0.1"
-    load-json-file "^5.1.0"
-    meow "^5.0.0"
-    mime-types "^2.1.21"
-    opn "^5.4.0"
-    portfinder "^1.0.19"
-    react "^16.6.3"
-    react-dom "^16.6.3"
-    read-pkg "^4.0.1"
-    read-pkg-up "^4.0.0"
-    recursive-readdir "^2.2.2"
-    update-notifier "^2.5.0"
-    ws "^6.1.2"
 
 debug@^2.1.2, debug@^2.2.0, debug@^2.3.3:
   version "2.6.9"

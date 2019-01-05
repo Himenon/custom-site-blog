@@ -1,0 +1,31 @@
+---
+title: リポジトリ・パッケージ管理をOrganizationに移譲しました
+---
+
+今回の話
+
+* CIを`travis-ci.org`から`travis-ci.com`に引っ越した
+* リポジトリを`https://github.com/Himenon/custom-site`から`https://github.com/custom-site/custom-site`に引っ越した
+* CodeCovをPersonalからTeamに変更した
+* NPMレジストリをPersonalからOrganizationに引っ越した
+* 2FA（2段階認証）でハマった
+
+
+## パッケージをdepcrecateにする
+
+https://www.npmjs.com/package/custom-site をdeprecateにします。
+ローカルからcliを叩けば完了。
+
+```
+npm deprecate custom-site "transferred to the '@custom-site' organization."
+```
+
+unpublishはしばらくしてからやろうと思います。パッケージの名前空間自体を削除する場合はサポートにメールだったかな？
+あとは
+
+"[npmで使われてないアカウントを解放してもらった](https://efcl.info/2018/05/07/dispute-npm-account/)"にあるように他人がほしいって言われたときに渡すとかですかね。
+
+* https://docs.travis-ci.com/user/legacy-services-to-github-apps-migration-guide/
+* [Travis CIは公開リポジトリもプライベートリポジトリもtravis-ci.comになるみたい](https://qiita.com/nwtgck/items/da0e2f5ba2247403c2db)
+* [GitHubで個人リポジトリからOrganizationリポジトリにしてやったこと一覧](https://qiita.com/yu1ro/items/5da82882647b4c400559)
+

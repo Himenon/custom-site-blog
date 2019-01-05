@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // tslint:disable-next-line:no-reference
-/// <reference path="../node_modules/custom-site//typings/@custom-site/index.d.ts" />
+/// <reference path="../node_modules/@custom-site/custom-site//typings/@custom-site/index.d.ts" />
 const React = require("react");
 const headerContent = (props) => {
     return (React.createElement("div", { id: "header" },

@@ -10,6 +10,11 @@
       "minimum-scale": 0.5,
       "user-scalable": "no"
     },
+    "thirdParty": {
+      "googleAnalytics": {
+        "ua": "UA-55455343-7"
+      }
+    },
     "js": [
       "/assets/js/respond.js",
       "https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"
@@ -21,8 +26,17 @@
     ]
   },
   "build": {
+    "basePath": "/custom-site-blog",
+    "layoutFile": "./template/template.js",
+    "customComponentsFile": "./components/components.js",
     "blacklist": {
       "extensions": [".html", ".json", ".mdx"]
     }
+  },
+  "develop": {
+    "basePath": "/custom-site-blog",
+    "layoutFile": "./template/template.js",
+    "customComponentsFile": "./components/components.js",
+    "port": 9000
   }
 }
