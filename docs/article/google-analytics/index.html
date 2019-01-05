@@ -1,0 +1,51 @@
+<html><head lang="ja"><title>Google Analyticsがconfigから利用できるようになりました</title><meta charSet="utf-8"/><meta name="keywords" content="静的サイトジェネレーター,NodeJS,React,generator"/><meta name="description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。"/><meta name="copyright" content="@Himenon"/><meta name="viewport" content="initial-scale=1,minimum-scale=0.5,user-scalable=no"/><script src="/custom-site-blog/assets/js/respond.js"></script><script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script><link href="/custom-site-blog/assets/stylesheets/styles.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/pygment_trac.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/prism-cb.css" rel="stylesheet"/><script>
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-55455343-7', 'auto');
+ga('send', 'pageview');
+</script></head><body><div id="header"><div class="wrapper"><a href="/custom-site-blog" class="btn">静的サイトジェネレーター開発日誌</a><ul class="nav"><li class="downloads"><a href="https://github.com/Himenon/custom-site" class="btn">Github</a></li></ul></div></div><div class="wrapper"><section><h1>Google Analyticsがconfigから利用できるようになりました</h1><div><p>PR 26</p><ul><li><a href="https://github.com/custom-site/custom-site/pull/26">https://github.com/custom-site/custom-site/pull/26</a></li></ul><p>今回の新機能</p><ol><li>Google Analyticsの設定がconfig.jsonから出来るように</li></ol><p><code>config.json</code>に<code>thirdParty</code>を掘りました。
+その中にGoogle Analyticsの設定値を記述されたら<code>script</code>タグが
+<code>&lt;/head&gt;</code>の直前にささる算段です。</p><pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
+  <span class="token property">"global"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+    <span class="token property">"thirdParty"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+      <span class="token property">"googleAnalytics"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
+        <span class="token property">"ua"</span><span class="token operator">:</span> <span class="token string">"UA-xxxxxxx-x"</span> // ココ！
+      <span class="token punctuation">}</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre><p>参考</p><ul><li><a href="https://developers.google.com/analytics/devguides/collection/analyticsjs">https://developers.google.com/analytics/devguides/collection/analyticsjs</a></li><li><a href="https://support.google.com/analytics/answer/1008080">https://support.google.com/analytics/answer/1008080</a></li></ul><h2>実装の話</h2><h3>Google Analytics用のタグを作る</h3><p>何のひねりもありません。実装は次の通りです。</p><pre class="language-tsx"><code class="language-tsx"><span class="token keyword">import</span> <span class="token punctuation">{</span> ThirdParty <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">"@custom-site/page"</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token operator">*</span> <span class="token keyword">as</span> React <span class="token keyword">from</span> <span class="token string">"react"</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> <span class="token function-variable function">code</span> <span class="token operator">=</span> <span class="token punctuation">(</span>ua<span class="token punctuation">:</span> <span class="token builtin">string</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token template-string"><span class="token string">`
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+ga('create', '</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>ua<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">', 'auto');
+ga('send', 'pageview');
+`</span></span><span class="token punctuation">;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">const</span> generateGoogleAnalyticsElement <span class="token operator">=</span> <span class="token punctuation">(</span>params<span class="token punctuation">:</span> ThirdParty<span class="token punctuation">[</span><span class="token string">"googleAnalytics"</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>params <span class="token operator">||</span> <span class="token operator">!</span>params<span class="token punctuation">.</span>ua<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">const</span> props<span class="token punctuation">:</span> <span class="token constant">JSX</span><span class="token punctuation">.</span>IntrinsicElements<span class="token punctuation">[</span><span class="token string">"script"</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">{</span>
+    dangerouslySetInnerHTML<span class="token punctuation">:</span> <span class="token punctuation">{</span>
+      __html<span class="token punctuation">:</span> <span class="token function">code</span><span class="token punctuation">(</span>params<span class="token punctuation">.</span>ua<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+  <span class="token keyword">return</span> <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>script</span> <span class="token spread"><span class="token punctuation">{</span><span class="token punctuation">...</span><span class="token attr-value">props</span><span class="token punctuation">}</span></span> <span class="token punctuation">/></span></span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre><p>これを<code>&lt;/head&gt;</code>の直前に挿して、パラメータを渡せば完了です。</p><p>あとは、外部から与えられるような値（今回だと<code>config.json</code>）は基本信頼しない値として扱うことで、
+不本意な値の混入を防ぎましょう。</p><pre class="language-ts"><code class="language-ts"><span class="token keyword">export</span> <span class="token keyword">interface</span> <span class="token class-name">ThirdParty</span> <span class="token punctuation">{</span>
+  googleAnalytics<span class="token operator">?</span><span class="token punctuation">:</span> <span class="token punctuation">{</span> <span class="token comment">// 無いものとして扱う</span>
+    ua<span class="token operator">?</span><span class="token punctuation">:</span> <span class="token builtin">string</span><span class="token punctuation">;</span>      <span class="token comment">// 無いものとして扱う</span>
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre><p>これをやっておかないと、すぐに<code>undefined</code>が混入したり、途中で落ちたりするので注意ですね。</p><h3>Bug fix</h3><p>次のものを修正しました。</p><ul><li><code>config.json</code>の設定値がdevのときに反映されない問題の解決</li></ul><p><img src="/custom-site-blog/article/images/2019-01-06-diff.png" alt="修正箇所"/></p><p>すみません。展開する場所を間違っていました。</p><h2>次やること</h2><p>前回、いろいろと名前を決めていったので、もろもろ移動していきます（またか）。
+<code>@custom-site</code>という名前空間がGithub/NPM Registryともに空いていたので移植する話です。</p><h2>関連記事</h2><ul><li><a href="/custom-site-blog/article/transfer-manage-repository-to-organization">次の記事: リポジトリ・パッケージ管理をOrganizationに移譲しました</a></li><li><a href="/custom-site-blog/article/change-package-name-to-custom-site">前の記事: パッケージ名を変更しました</a></li></ul></div></section></div></body></html>
