@@ -9,7 +9,7 @@ const headerContent = (props: PageProps): React.ReactElement<any> => {
     <div className="wrapper">
       <a href={props.site.url.relativePath} className="btn">{props.site.title}</a>
       <ul className="nav">
-        <li className="downloads"><a href="https://github.com/Himenon/custom-site" className="btn">Github</a></li>
+        <li className="downloads"><a href="https://github.com/custom-site/custom-site" className="btn">Github</a></li>
       </ul>
     </div>
   </div>
