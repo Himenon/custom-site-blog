@@ -1,0 +1,33 @@
+---
+title: プラグイン機構を考える
+---
+
+Twitterカードを用意しようと思ったら、記事ごとに`<meta>`を用意する必要がある。
+実装は簡単で、CustomComponentやCustomThemeと同じように作っていけばよいのだけれど、統一性が無いことがわかる。
+
+CustomComponetやCustomThemeもプラグインとして扱うことで、実装方式を統一して、ライブラリの外側から実装したい場合に耐えられるアーキテクチャを目指す。
+
+## プラグイン関連の資料を探す
+
+* https://www.gatsbyjs.org/docs/plugins/
+* https://jekyllrb.com/docs/plugins/
+* https://www.mkdocs.org/user-guide/plugins/
+* https://vuepress.vuejs.org/plugin/
+* https://webpack.js.org/concepts/plugins/
+* https://rollupjs.org/guide/en#plugins
+* https://nuxtjs.org/guide/plugins
+
+### 実装
+
+* https://github.com/Microsoft/typescript-tslint-plugin
+
+### まとまっているもの
+
+* https://github.com/azu/JavaScript-Plugin-Architecture
+* https://qiita.com/Quramy/items/1fc9aee235b79236775c
+
+## Middleware
+
+* http://expressjs.com/en/guide/using-middleware.html
+
+
