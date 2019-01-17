@@ -39,6 +39,18 @@ https://github.com/mkdocs/mkdocs/blob/f4d0b52e8cb86b84708a941b230a5029f4a5d657/m
 
 * https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby/src/internal-plugins
 
+```js
+const runAPI = (plugin, api, args) => {
+  // 読み込み
+  const gatsbyNode = require(`${plugin.resolve}/gatsby-node`)
+  if (gatsbyNode[api]) {
+    const parentSpan = args && args.parentSpan
+    const spanOptions = parentSpan ? { childOf: parentSpan } : 
+  }
+  ...
+}
+```
+
 ### まとまっているもの
 
 * https://github.com/azu/JavaScript-Plugin-Architecture
