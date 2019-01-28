@@ -1,7 +1,5 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-// tslint:disable-next-line:no-reference
-/// <reference path="../node_modules/@custom-site/custom-site//typings/@custom-site/index.d.ts" />
 const React = require("react");
 const headerContent = (props) => {
     return (React.createElement("div", { id: "header" },
@@ -14,7 +12,7 @@ const headerContent = (props) => {
 const mainContent = (props, content) => {
     return (React.createElement("div", { className: "wrapper" },
         React.createElement("section", null,
-            React.createElement("h1", null, props.article.title),
+            React.createElement("h1", null, props.page.metaData.title),
             content)));
 };
 const wrappedContent = (props, content) => {
@@ -22,7 +20,6 @@ const wrappedContent = (props, content) => {
         headerContent(props),
         mainContent(props, content)));
 };
-exports.bodyTemplate = (props) => (content) => {
-    const newContent = wrappedContent(props, content);
-    return newContent;
+exports.createBodyTemplateFunction = (props) => (content) => {
+    return wrappedContent(props, content);
 };

@@ -7,22 +7,20 @@
   "devDependencies": {
     "@types/node": "^10.12.18",
     "@types/prismjs": "^1.9.0",
-    "@types/react": "^16.7.18",
-    "@custom-site/custom-site": "^0.1.2",
+    "@types/react": "^16.7.21",
+    "@custom-site/custom-site": "^0.2.0",
     "npm-run-all": "^4.1.5",
     "prismjs": "^1.15.0",
     "react": "^16.7.0",
-    "typescript": "^3.2.2"
+    "typescript": "^3.2.4"
   },
   "scripts": {
     "start": "npm run prebuild && run-p server build:*:watch",
     "prebuild": "run-p build:*",
-    "server": "custom-site src -Do",
-    "build": "custom-site src --out-dir docs",
-    "build:template": "tsc ./template/template.tsx --jsx react --lib esnext --target esnext --module commonjs",
-    "build:components": "tsc ./components/components.tsx --jsx react --lib esnext --target esnext --module commonjs",
-    "build:template:watch": "npm run build:template -- --watch",
-    "build:components:watch": "npm run build:components -- --watch"
+    "server": "custom-site -c config.json -Do",
+    "build": "custom-site -c config.json --out-dir docs",
+    "build:tsc": "tsc -p tsconfig.json",
+    "build:tsc:watch": "yarn run build:tsc --watch"
   },
   "repository": {
     "type": "git",

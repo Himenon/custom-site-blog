@@ -45,18 +45,18 @@
       }
     ]
   },
-  "build": {
-    "basePath": "/custom-site-blog",
-    "layoutFile": "./template/template.js",
-    "customComponentsFile": "./components/components.js",
-    "blacklist": {
-      "extensions": [".html", ".json", ".mdx"]
-    }
+  "basePath": "/custom-site-blog",
+  "source": "./src",
+  "layoutFile": "./template/template.js",
+  "customComponentsFile": "./components/components.js",
+  "blacklist": {
+    "extensions": [".html", ".json", ".mdx"]
   },
-  "develop": {
-    "basePath": "/custom-site-blog",
-    "layoutFile": "./template/template.js",
-    "customComponentsFile": "./components/components.js",
-    "port": 9000
-  }
+  "port": 9000,
+  "plugins": [
+    {
+      "name": "MetaPlugin",
+      "resolve": "./plugins"
+    }
+  ]
 }
