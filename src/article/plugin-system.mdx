@@ -21,88 +21,24 @@ CustomComponetやCustomThemeもプラグインとして扱うことで、実装�
 
 * https://github.com/Microsoft/typescript-tslint-plugin
 
-#### nuxt.jsの場合
-
 https://github.com/nuxt/nuxt.js/blob/36ca945d004acf049b8110ca196448b03e7ca7a8/packages/builder/src/builder.js#L135-L163
 
-
-#### mkdocsの場合
 
 https://github.com/mkdocs/mkdocs/blob/f4d0b52e8cb86b84708a941b230a5029f4a5d657/mkdocs/plugins.py#L27-L32
 
 * [setuptoolsを使ったpluginサンプル egg編 — 清水川Web](http://www.freia.jp/taka/docs/pyhack4/setuptools/setuptools-plugin2.html)
 * [Python: setuptools のプラグイン機構 pkg\_resources を使ってみる \| CUBE SUGAR STORAGE](http://momijiame.tumblr.com/post/82484166907/python-setuptools-%E3%81%AE%E3%83%97%E3%83%A9%E3%82%B0%E3%82%A4%E3%83%B3%E6%A9%9F%E6%A7%8B-pkgresources-%E3%82%92%E4%BD%BF%E3%81%A3%E3%81%A6%E3%81%BF%E3%82%8B)
 
-#### gatsbyの場合
-
 [Gatsby Node APIs](https://www.gatsbyjs.org/docs/node-apis/)から探索していくと、実装箇所が容易に見つけられた。
 
 * https://github.com/gatsbyjs/gatsby/tree/master/packages/gatsby/src/internal-plugins
 
-```js
-const runAPI = (plugin, api, args) => {
-  // 読み込み
-  const gatsbyNode = require(`${plugin.resolve}/gatsby-node`)
-  if (gatsbyNode[api]) {
-    const parentSpan = args && args.parentSpan
-    const spanOptions = parentSpan ? { childOf: parentSpan } : 
-  }
-  ...
-}
-```
-
 
 * [Gatsbyはどうやって静的サイトをジェネレートしているのか – Eureka Engineering – Medium](https://medium.com/eureka-engineering/how-gatsby-works-bec4349caa12)
-
-
-### まとまっているもの
 
 * https://github.com/azu/JavaScript-Plugin-Architecture
 * https://qiita.com/Quramy/items/1fc9aee235b79236775c
 
-## Middleware
 
 * http://expressjs.com/en/guide/using-middleware.html
-
-
-## custom-siteのプラグインシステムを考える
-
-ボツ例
-
-```ts
-import { PageElement } from "@custom-site/page";
-
-export interface InternalPayload {
-  id: string;
-}
-
-export interface PayloadMap {
-  GENERATE_PAGE: { page: PageElement };
-}
-
-export interface EventHandlerMap {
-  GENERATE_PAGE: Array<(payload: PayloadMap["GENERATE_PAGE"]) => PageElement>;
-}
-
-type GetHandler<K> = K extends Array<infer R> ? R : never;
-
-export const makeStore = (handlers: EventHandlerMap) => {
-  return {
-    on<K extends keyof EventHandlerMap>(event: K, handler: GetHandler<EventHandlerMap[K]>): void {
-      (handlers[event] || (handlers[event] = [])).push(handler);
-    },
-    emit<K extends keyof EventHandlerMap>(event: K, payload: PayloadMap[K] & InternalPayload) {
-      let state: any; // any 敗北
-      if (handlers[event]) {
-        handlers[event].forEach(handler => {
-          state = handler(payload);
-        });
-      }
-      return state;
-    },
-  };
-};
-```
-
-プラグイン以外のStateを内部で持ったら負け。
 

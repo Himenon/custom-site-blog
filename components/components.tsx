@@ -22,7 +22,7 @@ const getLanguageDefinition = (lang: string): Prism.LanguageDefinition | null =>
   return null;
 }
 
-export const customComponents = (): CustomComponents => {
+export const generateCustomComponents = (): CustomComponents => {
   return {
     pre: props => <>{ props.children }</>,
     code: props => {
@@ -40,7 +40,7 @@ export const customComponents = (): CustomComponents => {
         ...props,
         children: undefined,
         dangerouslySetInnerHTML: {
-          __html: highlightHtml
+          __html: highlightHtml || ""
         }
       };
       return (

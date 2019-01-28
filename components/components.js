@@ -1,15 +1,10 @@
 "use strict";
-// tslint:disable-next-line:no-reference
-/// <reference path="../node_modules/@custom-site/custom-site/typings/@mdx-js/index.d.ts"/>
 Object.defineProperty(exports, "__esModule", { value: true });
 const Prism = require("prismjs");
 const React = require("react");
-/**
- * ハイライトしたい言語のjsファイルを読み込んでおく
- */
 require("prismjs/components/prism-typescript.min.js");
 require("prismjs/components/prism-jsx.min.js");
-require("prismjs/components/prism-tsx.min.js"); // jsxの後ろに定義する
+require("prismjs/components/prism-tsx.min.js");
 require("prismjs/components/prism-json.min.js");
 const SUPPORT_LANGUAGES = Object.keys(Prism.languages);
 const getLanguageDefinition = (lang) => {
@@ -18,7 +13,7 @@ const getLanguageDefinition = (lang) => {
     }
     return null;
 };
-exports.customComponents = () => {
+exports.generateCustomComponents = () => {
     return {
         pre: props => React.createElement(React.Fragment, null, props.children),
         code: props => {
@@ -37,7 +32,7 @@ exports.customComponents = () => {
                 ...props,
                 children: undefined,
                 dangerouslySetInnerHTML: {
-                    __html: highlightHtml
+                    __html: highlightHtml || ""
                 }
             };
             return (React.createElement("pre", { className: props.className },

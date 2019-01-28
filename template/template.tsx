@@ -1,9 +1,9 @@
 // tslint:disable-next-line:no-reference
 /// <reference path="../node_modules/@custom-site/custom-site//typings/@custom-site/index.d.ts" />
 import * as React from "react";
-import { PageProps } from "@custom-site/page";
+import { PostProps } from "@custom-site/page";
 
-const headerContent = (props: PageProps): React.ReactElement<any> => {
+const headerContent = (props: PostProps): React.ReactElement<any> => {
   return (
   <div id="header">
     <div className="wrapper">
@@ -16,18 +16,18 @@ const headerContent = (props: PageProps): React.ReactElement<any> => {
   );
 }
 
-const mainContent = (props: PageProps, content?: React.ReactNode): React.ReactElement<any> => {
+const mainContent = (props: PostProps, content?: React.ReactNode): React.ReactElement<any> => {
   return (
     <div className="wrapper">
       <section>
-        <h1>{props.article.title}</h1>
+        <h1>{props.page.metaData.title}</h1>
         {content}
       </section>
     </div>
   )
 }
 
-const wrappedContent = (props: PageProps, content?: React.ReactNode): React.ReactElement<any> => {
+const wrappedContent = (props: PostProps, content?: React.ReactNode): React.ReactElement<any> => {
   return (
     <body>
       {headerContent(props)}
@@ -36,7 +36,6 @@ const wrappedContent = (props: PageProps, content?: React.ReactNode): React.Reac
   );
 };
 
-export const bodyTemplate = (props: PageProps) => (content?: React.ReactNode): React.ReactElement<any> => {
-  const newContent = wrappedContent(props, content);
-  return newContent;
+export const createBodyTemplateFunction = (props: PostProps) => (content?: React.ReactNode): React.ReactElement<any> => {
+  return wrappedContent(props, content);
 };
