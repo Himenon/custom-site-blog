@@ -52,5 +52,11 @@
   "blacklist": {
     "extensions": [".html", ".json", ".mdx"]
   },
-  "port": 9000
+  "port": 9000,
+  "plugins": [
+    {
+      "name": "MetaPlugin",
+      "resolve": "./plugins"
+    }
+  ]
 }

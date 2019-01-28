@@ -30,7 +30,9 @@
     "components/**/*.ts",
     "components/**/*.tsx",
     "template/**/*.ts",
-    "template/**/*.tsx"
+    "template/**/*.tsx",
+    "plugins/**/*.ts",
+    "plugins/**/*.tsx"
   ],
   "exclude": [
     "./node_modules",
