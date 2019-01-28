@@ -51,6 +51,10 @@ const runAPI = (plugin, api, args) => {
 }
 ```
 
+
+* [Gatsbyはどうやって静的サイトをジェネレートしているのか – Eureka Engineering – Medium](https://medium.com/eureka-engineering/how-gatsby-works-bec4349caa12)
+
+
 ### まとまっているもの
 
 * https://github.com/azu/JavaScript-Plugin-Architecture
@@ -60,4 +64,45 @@ const runAPI = (plugin, api, args) => {
 
 * http://expressjs.com/en/guide/using-middleware.html
 
+
+## custom-siteのプラグインシステムを考える
+
+ボツ例
+
+```ts
+import { PageElement } from "@custom-site/page";
+
+export interface InternalPayload {
+  id: string;
+}
+
+export interface PayloadMap {
+  GENERATE_PAGE: { page: PageElement };
+}
+
+export interface EventHandlerMap {
+  GENERATE_PAGE: Array<(payload: PayloadMap["GENERATE_PAGE"]) => PageElement>;
+}
+
+type GetHandler<K> = K extends Array<infer R> ? R : never;
+
+export const makeStore = (handlers: EventHandlerMap) => {
+  return {
+    on<K extends keyof EventHandlerMap>(event: K, handler: GetHandler<EventHandlerMap[K]>): void {
+      (handlers[event] || (handlers[event] = [])).push(handler);
+    },
+    emit<K extends keyof EventHandlerMap>(event: K, payload: PayloadMap[K] & InternalPayload) {
+      let state: any; // any 敗北
+      if (handlers[event]) {
+        handlers[event].forEach(handler => {
+          state = handler(payload);
+        });
+      }
+      return state;
+    },
+  };
+};
+```
+
+プラグイン以外のStateを内部で持ったら負け。
 
