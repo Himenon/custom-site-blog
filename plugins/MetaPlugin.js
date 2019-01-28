@@ -15,13 +15,19 @@ const getOgImageSource = (globalLinks) => {
     }
     return;
 };
+const getDescription = (metaData) => {
+    if (metaData.description) {
+        return metaData.description;
+    }
+    return;
+};
 exports.onGenerateMetaData = payload => {
     const oldMetaData = payload.metaData;
     const newMetaData = {
         ...oldMetaData,
         "og:title": oldMetaData.title,
         "og:url": "https://himenon.github.io/custom-site-blog",
-        "og:description": oldMetaData.description,
+        "og:description": getDescription(oldMetaData),
         "og:image": getOgImageSource(oldMetaData.globalLinks)
     };
     return {

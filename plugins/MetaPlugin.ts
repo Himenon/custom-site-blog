@@ -20,13 +20,20 @@ const getOgImageSource = (globalLinks: ExternalLink["globalLinks"]): string | un
   return;
 }
 
+const getDescription = (metaData: HtmlMetaData): string | undefined => {
+  if (metaData.description) {
+    return metaData.description;
+  }
+  return;
+}
+
 export const onGenerateMetaData: PluginFunctionMap["onGenerateMetaData"] = payload => {
   const oldMetaData = payload.metaData;
   const newMetaData: HtmlMetaData = {
     ...oldMetaData,
     "og:title": oldMetaData.title,
     "og:url": "https://himenon.github.io/custom-site-blog",
-    "og:description": oldMetaData.description,
+    "og:description": getDescription(oldMetaData),
     "og:image": getOgImageSource(oldMetaData.globalLinks)
   };
   return {
