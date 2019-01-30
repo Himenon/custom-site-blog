@@ -7,7 +7,7 @@ const headerContent = (props: PostProps): React.ReactElement<any> => {
   return (
   <div id="header">
     <div className="wrapper">
-      <a href={props.site.url.relativePath} className="btn">{props.site.title}</a>
+      <a href={props.site.baseUri} className="btn">{props.site.title}</a>
       <ul className="nav">
         <li className="downloads"><a href="https://github.com/custom-site/custom-site" className="btn">Github</a></li>
       </ul>

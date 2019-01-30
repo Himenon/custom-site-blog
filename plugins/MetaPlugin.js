@@ -1,5 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+const path = require("path");
+const pretty = require('pretty');
 const getOgImageSource = (globalLinks) => {
     if (!globalLinks) {
         return;
@@ -15,22 +17,44 @@ const getOgImageSource = (globalLinks) => {
     }
     return;
 };
-const getDescription = (metaData) => {
-    if (metaData.description) {
-        return metaData.description;
-    }
-    return;
-};
 exports.onGenerateMetaData = payload => {
-    const oldMetaData = payload.metaData;
-    const newMetaData = {
-        ...oldMetaData,
-        "og:title": oldMetaData.title,
-        "og:url": "https://himenon.github.io/custom-site-blog",
-        "og:description": getDescription(oldMetaData),
-        "og:image": getOgImageSource(oldMetaData.globalLinks)
+    const page = payload.page;
+    const currentPageAbsolutePath = path.join(payload.site.baseUrl, page.uri);
+    payload.page.metaData = {
+        ...payload.page.metaData,
+        extend: {
+            meta: [
+                {
+                    name: "twitter:card",
+                    content: "summary",
+                },
+                {
+                    name: "twitter:site",
+                    content: currentPageAbsolutePath,
+                },
+                {
+                    property: "og:title",
+                    content: page.metaData.title,
+                },
+                {
+                    property: "og:url",
+                    content: currentPageAbsolutePath
+                },
+                {
+                    property: "og:description",
+                    content: page.metaData.description
+                },
+                {
+                    property: "og:image",
+                    content: getOgImageSource(page.metaData.globalLinks)
+                },
+            ]
+        }
     };
+    return payload;
+};
+exports.onAfterRenderPage = (payload) => {
     return {
-        metaData: newMetaData,
+        html: pretty(payload.html)
     };
 };

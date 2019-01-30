@@ -45,7 +45,8 @@
       }
     ]
   },
-  "basePath": "/custom-site-blog",
+  "baseUrl": "https://himenon.github.io",
+  "baseUri": "/custom-site-blog",
   "source": "./src",
   "layoutFile": "./template/template.js",
   "customComponentsFile": "./components/components.js",
