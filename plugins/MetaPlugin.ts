@@ -26,6 +26,7 @@ const getOgImageSource = (globalLinks: ExternalLink["globalLinks"]): string | un
 export const onGenerateMetaData: PluginFunctionMap["onGenerateMetaData"] = payload => {
   const page = payload.page;
   const currentPageAbsolutePath = path.join(payload.site.baseUrl, page.uri);
+  const imageUrl = getOgImageSource(page.metaData.globalLinks);
   payload.page.metaData = {
     ...payload.page.metaData,
     extend: {
@@ -52,7 +53,7 @@ export const onGenerateMetaData: PluginFunctionMap["onGenerateMetaData"] = paylo
         },
         {
           property: "og:image",
-          content: getOgImageSource(page.metaData.globalLinks)
+          content: path.join(payload.site.baseUrl, imageUrl || "")
         },
       ]
     }

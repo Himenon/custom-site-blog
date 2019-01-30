@@ -20,6 +20,7 @@ const getOgImageSource = (globalLinks) => {
 exports.onGenerateMetaData = payload => {
     const page = payload.page;
     const currentPageAbsolutePath = path.join(payload.site.baseUrl, page.uri);
+    const imageUrl = getOgImageSource(page.metaData.globalLinks);
     payload.page.metaData = {
         ...payload.page.metaData,
         extend: {
@@ -46,7 +47,7 @@ exports.onGenerateMetaData = payload => {
                 },
                 {
                     property: "og:image",
-                    content: getOgImageSource(page.metaData.globalLinks)
+                    content: path.join(payload.site.baseUrl, imageUrl || "")
                 },
             ]
         }
