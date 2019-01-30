@@ -31,7 +31,7 @@ exports.onGenerateMetaData = payload => {
                 },
                 {
                     name: "twitter:site",
-                    content: currentPageAbsolutePath,
+                    content: "@Himenon",
                 },
                 {
                     property: "og:title",

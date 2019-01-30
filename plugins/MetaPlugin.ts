@@ -37,7 +37,7 @@ export const onGenerateMetaData: PluginFunctionMap["onGenerateMetaData"] = paylo
         },
         {
           name: "twitter:site",
-          content: currentPageAbsolutePath,
+          content: "@Himenon",
         },
         {
           property: "og:title",
