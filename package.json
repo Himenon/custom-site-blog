@@ -13,15 +13,17 @@
     "pretty": "^2.0.0",
     "prismjs": "^1.15.0",
     "react": "^16.7.0",
+    "rimraf": "^2.6.3",
     "typescript": "^3.2.4"
   },
   "scripts": {
     "start": "npm run prebuild && run-p server build:*:watch",
     "prebuild": "run-p build:*",
     "server": "custom-site -c config.json -Do",
-    "build": "custom-site -c config.json --out-dir docs",
+    "build": "yarn run clean && custom-site -c config.json --out-dir docs",
     "build:tsc": "tsc -p tsconfig.json",
-    "build:tsc:watch": "yarn run build:tsc --watch"
+    "build:tsc:watch": "yarn run build:tsc --watch",
+    "clean": "rimraf ./docs"
   },
   "repository": {
     "type": "git",
