@@ -1,17 +1,149 @@
-<html><head lang="ja"><title>リポジトリ・パッケージ管理をOrganizationに移譲しました</title><meta charSet="utf-8"/><meta name="keywords" content="静的サイトジェネレーター,NodeJS,React,generator"/><meta name="description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。"/><meta name="copyright" content="@Himenon"/><meta property="og:title" content="リポジトリ・パッケージ管理をOrganizationに移譲しました"/><meta property="og:description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。"/><meta property="og:image" content="/custom-site-blog/assets/images/favicon/apple-touch-icon.png"/><meta property="og:url" content="https://himenon.github.io/custom-site-blog"/><meta name="viewport" content="initial-scale=1,minimum-scale=0.5,user-scalable=no"/><link rel="apple-touch-icon" sizes="180x180" href="/custom-site-blog/assets/images/favicon/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/custom-site-blog/assets/images/favicon/favicon-32x32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/custom-site-blog/assets/images/favicon/favicon-16x16.png"/><link rel="manifest" href="/custom-site-blog/assets/images/favicon/site.webmanifest"/><link href="/custom-site-blog/assets/stylesheets/styles.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/pygment_trac.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/prism-cb.css" rel="stylesheet"/><script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+<html>
 
-ga('create', 'UA-55455343-7', 'auto');
-ga('send', 'pageview');
-</script></head><body><div id="header"><div class="wrapper"><a href="/custom-site-blog" class="btn">静的サイトジェネレーター開発日誌</a><ul class="nav"><li class="downloads"><a href="https://github.com/custom-site/custom-site" class="btn">Github</a></li></ul></div></div><div class="wrapper"><section><h1>リポジトリ・パッケージ管理をOrganizationに移譲しました</h1><div><p>今回の話</p><ul><li>CIを<code>travis-ci.org</code>から<code>travis-ci.com</code>に引っ越した</li><li>リポジトリを<code>https://github.com/Himenon/custom-site</code>から<code>https://github.com/custom-site/custom-site</code>に引っ越した</li><li>CodeCovをPersonalからTeamに変更した</li><li>NPMレジストリをPersonalからOrganizationに引っ越した</li><li><code>npm publish</code>の2FAにハマった</li></ul><p>全体的に&quot;<a href="https://qiita.com/yu1ro/items/5da82882647b4c400559">GitHubで個人リポジトリからOrganizationリポジトリにしてやったこと一覧</a>&quot;の記事の焼き直し。</p><h2>お話</h2><h3>GithubのリポジトリをPersonalからOrganizationに引っ越し</h3><p>リポジトリの<code>Settings</code>のDangaer Zoneの中にありました。</p><p>今回の行き先は<code>custom-site/custom-site</code>なので、同じ文字列が入りました。</p><p><img src="/custom-site-blog/article/images/2019-01-06-github-transfer.png" alt="移譲"/></p><p>CI系の設定も引き継がれるようですが、Personalのときのままなので再設定したほうが良いでしょう。</p><h3>CodeCovをPersonalからTeamに変更した</h3><p>移植前の設定をすべてRevokeして、設定してきます。
-CodeCovでは<code>Team</code>という単位でOrganizationのリポジトリを扱っていくようです。</p><p>面倒くさいので、Github Marketplace(<a href="https://github.com/marketplace/codecov">https://github.com/marketplace/codecov</a>)からcodecovの設定を行いました。</p><p>これをやった上で <a href="https://codecov.io/gh">https://codecov.io/gh</a> に行くとリポジトリが見えるようになっていると思います。
-（いろいろやってみたけどこれが一番早かった）</p><p><img src="/custom-site-blog/article/images/2019-01-06-codecov.png" alt="codecov"/></p><h3>CIをtravis-ci.orgからtravis-ci.comへ引っ越した</h3><ul><li><a href="https://docs.travis-ci.com/user/legacy-services-to-github-apps-migration-guide/">https://docs.travis-ci.com/user/legacy-services-to-github-apps-migration-guide/</a></li><li><a href="https://qiita.com/nwtgck/items/da0e2f5ba2247403c2db">Travis CIは公開リポジトリもプライベートリポジトリもtravis-ci.comになるみたい</a></li></ul><p>orgからcomへとりあえず引っ越しておけば良し。</p><p>どうやら、ボタンでポチッと出来る機構は現在(2019/01/06)は無いので、env系が全部吹っ飛びます。
-まぁ、そんなに多くない（<del>浅はか</del>）ので全部revokeして、comの方で再度設定していきました。</p><p>Github側のAPIも切っていくことをお忘れなく。</p><h3>パッケージ名の変更</h3><p><code>@custom-site</code>という名前空間を押さえているのでpackage.jsonとかをrenameしていきます。<br/>あえてコマンドで打つなら</p><pre><code>npm init --scope=@custom-site
-</code></pre><p>でおｋ。勝手にやってくれた。あとは内部の使っている箇所を変更していくだけでした。</p><p>参考</p><ul><li><a href="https://efcl.info/2015/04/30/npm-namespace/">https://efcl.info/2015/04/30/npm-namespace/</a></li></ul><h3>パッケージをdepcrecateにする</h3><p><a href="https://www.npmjs.com/package/custom-site">https://www.npmjs.com/package/custom-site</a> をdeprecateにします。
-ローカルからcliを叩けば完了。</p><pre><code>npm deprecate custom-site &quot;transferred to the &#x27;@custom-site&#x27; organization.&quot;
-</code></pre><p><img src="/custom-site-blog/article/images/2019-01-06-npm-deprecated.png" alt="deprecated"/></p><p>unpublishはしばらくしてからやろうと思います。パッケージの名前空間自体を削除する場合はサポートにメールだったかな？
-あとは</p><p>&quot;<a href="https://efcl.info/2018/05/07/dispute-npm-account/">npmで使われてないアカウントを解放してもらった</a>&quot;にあるように他人がほしいって言われたときに渡すとかですかね。</p><h3>npm publishの2FAにハマった</h3><table><thead><tr><th align="left">ユーザー側の設定</th><th align="left">パッケージ側の設定</th></tr></thead><tbody><tr><td align="left"><img src="/custom-site-blog/article/images/2019-01-06-npm-settings-for-user-2fa.png" alt="ユーザー側の設定"/></td><td align="left"><img src="/custom-site-blog/article/images/2019-01-06-npm-settings-for-package-2fa.png" alt="パッケージ側の設定"/></td></tr></tbody></table><p>両方に2FA入れてがんじがらめにやってもいいけど、CIがautomationできなくなるよ！ということを伝えたい。s</p><p>回避策としては、</p><ul><li>ユーザー側の2FAは<code>Authorization</code>のみにする（publishはauthTokenで出来るように）</li><li>パッケージ側の設定はなし（※決して推奨しているわけではない）</li></ul><p>これが、CIで自動でやるトレードオフ。</p><blockquote class="twitter-tweet" data="[object Object]"><p lang="ja" dir="ltr">なるほどー<a href="https://t.co/Ot5BnfXtVH">https://t.co/Ot5BnfXtVH</a></p>— HimeNyan (@himenoglyph) <a href="https://twitter.com/himenoglyph/status/1081633834146250752?ref_src=twsrc%5Etfw">2019年1月5日</a></blockquote><script async="" src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script><blockquote class="twitter-tweet" data="[object Object]"><p lang="ja" dir="ltr">ユーザーとパッケージのそれぞれに2FAの設定が可能で、パッケージ側から2FA要求をした場合、publishのときも引っかかるようになる。ログインだけじゃなく。ユーザーの2FAはpublishの設定を引いた設定があるので、それを利用すれば少なくともユーザーログインが2FAで縛れる</p>— HimeNyan (@himenoglyph) <a href="https://twitter.com/himenoglyph/status/1081635545455841280?ref_src=twsrc%5Etfw">2019年1月5日</a></blockquote><script async="" src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script><h2>次やること</h2><p>名前空間で区切ることに成功したので、lernaあたりを使って開発出来るようになった。
-が、まだいろいろと実装を入れていきたいのでしばらく混沌とした今の状態が続くと思う。</p><p>次やるのは</p><ul><li>ファイルから生成日・更新日を取得反映</li><li>Reactでバインドしたイベントが動かせるか試す</li></ul><p>ですかね。</p><h2>関連記事</h2><ul><li>次の記事: 工事中</li><li><a href="/custom-site-blog/article/google-analytics">前の記事: Google Analyticsがconfigから利用できるようになりました</a></li></ul></div></section></div></body></html>
+  <head lang="ja">
+    <title>リポジトリ・パッケージ管理をOrganizationに移譲しました</title>
+    <meta charSet="utf-8" />
+    <meta name="keywords" content="静的サイトジェネレーター,NodeJS,React,generator" />
+    <meta name="description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。" />
+    <meta name="copyright" content="@Himenon" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="https:/himenon.github.io/custom-site-blog/article/transfer-manage-repository-to-organization" />
+    <meta property="og:title" content="リポジトリ・パッケージ管理をOrganizationに移譲しました" />
+    <meta property="og:url" content="https:/himenon.github.io/custom-site-blog/article/transfer-manage-repository-to-organization" />
+    <meta property="og:description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。" />
+    <meta property="og:image" content="/custom-site-blog/assets/images/favicon/apple-touch-icon.png" />
+    <meta name="viewport" content="initial-scale=1,minimum-scale=0.5,user-scalable=no" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/custom-site-blog/assets/images/favicon/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/custom-site-blog/assets/images/favicon/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/custom-site-blog/assets/images/favicon/favicon-16x16.png" />
+    <link rel="manifest" href="/custom-site-blog/assets/images/favicon/site.webmanifest" />
+    <link href="/custom-site-blog/assets/stylesheets/styles.css" rel="stylesheet" />
+    <link href="/custom-site-blog/assets/stylesheets/pygment_trac.css" rel="stylesheet" />
+    <link href="/custom-site-blog/assets/stylesheets/prism-cb.css" rel="stylesheet" />
+    <script>
+      (function(i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function() {
+          (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+          m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+      ga('create', 'UA-55455343-7', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </head>
+
+  <body>
+    <div id="header">
+      <div class="wrapper"><a href="/custom-site-blog" class="btn">静的サイトジェネレーター開発日誌</a>
+        <ul class="nav">
+          <li class="downloads"><a href="https://github.com/custom-site/custom-site" class="btn">Github</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrapper">
+      <section>
+        <h1>リポジトリ・パッケージ管理をOrganizationに移譲しました</h1>
+        <div>
+          <p>今回の話</p>
+          <ul>
+            <li>CIを<code>travis-ci.org</code>から<code>travis-ci.com</code>に引っ越した</li>
+            <li>リポジトリを<code>https://github.com/Himenon/custom-site</code>から<code>https://github.com/custom-site/custom-site</code>に引っ越した</li>
+            <li>CodeCovをPersonalからTeamに変更した</li>
+            <li>NPMレジストリをPersonalからOrganizationに引っ越した</li>
+            <li><code>npm publish</code>の2FAにハマった</li>
+          </ul>
+          <p>全体的に&quot;<a href="https://qiita.com/yu1ro/items/5da82882647b4c400559">GitHubで個人リポジトリからOrganizationリポジトリにしてやったこと一覧</a>&quot;の記事の焼き直し。</p>
+          <h2>お話</h2>
+          <h3>GithubのリポジトリをPersonalからOrganizationに引っ越し</h3>
+          <p>リポジトリの<code>Settings</code>のDangaer Zoneの中にありました。</p>
+          <p>今回の行き先は<code>custom-site/custom-site</code>なので、同じ文字列が入りました。</p>
+          <p><img src="/custom-site-blog/article/images/2019-01-06-github-transfer.png" alt="移譲" /></p>
+          <p>CI系の設定も引き継がれるようですが、Personalのときのままなので再設定したほうが良いでしょう。</p>
+          <h3>CodeCovをPersonalからTeamに変更した</h3>
+          <p>移植前の設定をすべてRevokeして、設定してきます。
+            CodeCovでは<code>Team</code>という単位でOrganizationのリポジトリを扱っていくようです。</p>
+          <p>面倒くさいので、Github Marketplace(<a href="https://github.com/marketplace/codecov">https://github.com/marketplace/codecov</a>)からcodecovの設定を行いました。</p>
+          <p>これをやった上で <a href="https://codecov.io/gh">https://codecov.io/gh</a> に行くとリポジトリが見えるようになっていると思います。
+            （いろいろやってみたけどこれが一番早かった）</p>
+          <p><img src="/custom-site-blog/article/images/2019-01-06-codecov.png" alt="codecov" /></p>
+          <h3>CIをtravis-ci.orgからtravis-ci.comへ引っ越した</h3>
+          <ul>
+            <li><a href="https://docs.travis-ci.com/user/legacy-services-to-github-apps-migration-guide/">https://docs.travis-ci.com/user/legacy-services-to-github-apps-migration-guide/</a></li>
+            <li><a href="https://qiita.com/nwtgck/items/da0e2f5ba2247403c2db">Travis CIは公開リポジトリもプライベートリポジトリもtravis-ci.comになるみたい</a></li>
+          </ul>
+          <p>orgからcomへとりあえず引っ越しておけば良し。</p>
+          <p>どうやら、ボタンでポチッと出来る機構は現在(2019/01/06)は無いので、env系が全部吹っ飛びます。
+            まぁ、そんなに多くない（<del>浅はか</del>）ので全部revokeして、comの方で再度設定していきました。</p>
+          <p>Github側のAPIも切っていくことをお忘れなく。</p>
+          <h3>パッケージ名の変更</h3>
+          <p><code>@custom-site</code>という名前空間を押さえているのでpackage.jsonとかをrenameしていきます。<br />あえてコマンドで打つなら</p><pre><code>npm init --scope=@custom-site
+</code></pre>
+          <p>でおｋ。勝手にやってくれた。あとは内部の使っている箇所を変更していくだけでした。</p>
+          <p>参考</p>
+          <ul>
+            <li><a href="https://efcl.info/2015/04/30/npm-namespace/">https://efcl.info/2015/04/30/npm-namespace/</a></li>
+          </ul>
+          <h3>パッケージをdepcrecateにする</h3>
+          <p><a href="https://www.npmjs.com/package/custom-site">https://www.npmjs.com/package/custom-site</a> をdeprecateにします。
+            ローカルからcliを叩けば完了。</p><pre><code>npm deprecate custom-site &quot;transferred to the &#x27;@custom-site&#x27; organization.&quot;
+</code></pre>
+          <p><img src="/custom-site-blog/article/images/2019-01-06-npm-deprecated.png" alt="deprecated" /></p>
+          <p>unpublishはしばらくしてからやろうと思います。パッケージの名前空間自体を削除する場合はサポートにメールだったかな？
+            あとは</p>
+          <p>&quot;<a href="https://efcl.info/2018/05/07/dispute-npm-account/">npmで使われてないアカウントを解放してもらった</a>&quot;にあるように他人がほしいって言われたときに渡すとかですかね。</p>
+          <h3>npm publishの2FAにハマった</h3>
+          <table>
+            <thead>
+              <tr>
+                <th align="left">ユーザー側の設定</th>
+                <th align="left">パッケージ側の設定</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="left"><img src="/custom-site-blog/article/images/2019-01-06-npm-settings-for-user-2fa.png" alt="ユーザー側の設定" /></td>
+                <td align="left"><img src="/custom-site-blog/article/images/2019-01-06-npm-settings-for-package-2fa.png" alt="パッケージ側の設定" /></td>
+              </tr>
+            </tbody>
+          </table>
+          <p>両方に2FA入れてがんじがらめにやってもいいけど、CIがautomationできなくなるよ！ということを伝えたい。s</p>
+          <p>回避策としては、</p>
+          <ul>
+            <li>ユーザー側の2FAは<code>Authorization</code>のみにする（publishはauthTokenで出来るように）</li>
+            <li>パッケージ側の設定はなし（※決して推奨しているわけではない）</li>
+          </ul>
+          <p>これが、CIで自動でやるトレードオフ。</p>
+          <blockquote class="twitter-tweet" data="[object Object]">
+            <p lang="ja" dir="ltr">なるほどー<a href="https://t.co/Ot5BnfXtVH">https://t.co/Ot5BnfXtVH</a></p>— HimeNyan (@himenoglyph) <a href="https://twitter.com/himenoglyph/status/1081633834146250752?ref_src=twsrc%5Etfw">2019年1月5日</a>
+          </blockquote>
+          <script async="" src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script>
+          <blockquote class="twitter-tweet" data="[object Object]">
+            <p lang="ja" dir="ltr">ユーザーとパッケージのそれぞれに2FAの設定が可能で、パッケージ側から2FA要求をした場合、publishのときも引っかかるようになる。ログインだけじゃなく。ユーザーの2FAはpublishの設定を引いた設定があるので、それを利用すれば少なくともユーザーログインが2FAで縛れる</p>— HimeNyan (@himenoglyph) <a href="https://twitter.com/himenoglyph/status/1081635545455841280?ref_src=twsrc%5Etfw">2019年1月5日</a>
+          </blockquote>
+          <script async="" src="https://platform.twitter.com/widgets.js" charSet="utf-8"></script>
+          <h2>次やること</h2>
+          <p>名前空間で区切ることに成功したので、lernaあたりを使って開発出来るようになった。
+            が、まだいろいろと実装を入れていきたいのでしばらく混沌とした今の状態が続くと思う。</p>
+          <p>次やるのは</p>
+          <ul>
+            <li>ファイルから生成日・更新日を取得反映</li>
+            <li>Reactでバインドしたイベントが動かせるか試す</li>
+          </ul>
+          <p>ですかね。</p>
+          <h2>関連記事</h2>
+          <ul>
+            <li>次の記事: 工事中</li>
+            <li><a href="/custom-site-blog/article/google-analytics">前の記事: Google Analyticsがconfigから利用できるようになりました</a></li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </body>
+
+</html>

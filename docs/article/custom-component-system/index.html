@@ -1,16 +1,76 @@
-<html><head lang="ja"><title>カスタムコンポーネント機能の実装</title><meta charSet="utf-8"/><meta name="keywords" content="静的サイトジェネレーター,NodeJS,React,generator"/><meta name="description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。"/><meta name="copyright" content="@Himenon"/><meta property="og:title" content="カスタムコンポーネント機能の実装"/><meta property="og:description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。"/><meta property="og:image" content="/custom-site-blog/assets/images/favicon/apple-touch-icon.png"/><meta property="og:url" content="https://himenon.github.io/custom-site-blog"/><meta name="viewport" content="initial-scale=1,minimum-scale=0.5,user-scalable=no"/><link rel="apple-touch-icon" sizes="180x180" href="/custom-site-blog/assets/images/favicon/apple-touch-icon.png"/><link rel="icon" type="image/png" sizes="32x32" href="/custom-site-blog/assets/images/favicon/favicon-32x32.png"/><link rel="icon" type="image/png" sizes="16x16" href="/custom-site-blog/assets/images/favicon/favicon-16x16.png"/><link rel="manifest" href="/custom-site-blog/assets/images/favicon/site.webmanifest"/><link href="/custom-site-blog/assets/stylesheets/styles.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/pygment_trac.css" rel="stylesheet"/><link href="/custom-site-blog/assets/stylesheets/prism-cb.css" rel="stylesheet"/><script>
-(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+<html>
 
-ga('create', 'UA-55455343-7', 'auto');
-ga('send', 'pageview');
-</script></head><body><div id="header"><div class="wrapper"><a href="/custom-site-blog" class="btn">静的サイトジェネレーター開発日誌</a><ul class="nav"><li class="downloads"><a href="https://github.com/custom-site/custom-site" class="btn">Github</a></li></ul></div></div><div class="wrapper"><section><h1>カスタムコンポーネント機能の実装</h1><div><p>PR22で追加しました。</p><ul><li><a href="https://github.com/custom-site/custom-site/pull/22">https://github.com/custom-site/custom-site/pull/22</a></li></ul><p>今回の新機能</p><ol><li>コンポーネント単位のカスタムが可能になりました。</li></ol><h2>実装の話</h2><p>実は<a href="/custom-site-blog/article/custom-template-system">前回</a>の使い回しなので、ほとんど書くことが無いんですよね〜。</p><p>CLIからカスタムコンポーネントのファイルを指定して、vmで実行。
-その返り値を<code>&lt;MDXTag&gt;</code>に渡すだけでおしまい。</p><p>型の紹介でもしておきましょう。<a href="https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react/index.d.ts#L2678-L2853">@types/react</a>で定義されている
-<code>JSX.IntrinsicElements</code>を使えばカスタム可能なコンポーネントの一覧を得ることができます。
-それを今回ほしい型に整形して定義しておきます。</p><pre class="language-ts"><code class="language-ts"><span class="token keyword">export</span> <span class="token keyword">type</span> CustomComponents <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token punctuation">[</span><span class="token constant">P</span> <span class="token keyword">in</span> keyof <span class="token constant">JSX</span><span class="token punctuation">.</span>IntrinsicElements<span class="token punctuation">]</span><span class="token operator">?</span><span class="token punctuation">:</span> <span class="token punctuation">(</span>props<span class="token punctuation">:</span> <span class="token constant">JSX</span><span class="token punctuation">.</span>IntrinsicElements<span class="token punctuation">[</span><span class="token constant">P</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">=></span> React<span class="token punctuation">.</span>ReactNode <span class="token punctuation">}</span><span class="token punctuation">;</span>
-</code></pre><p>これを利用することにより、圧倒的に開発が楽になります！</p><p>さて、カスタムコンポーネントが利用できるようになったことで、とても重要な機能が利用できるようになりました。</p><p>それは、<u>Syntax Highlight機能</u>です。しかも、サーバーサイドレンダリングで！</p><p>この記事の執筆当時のカスタムコンポーネントを紹介しましょう。</p><h3>カスタムコンポーネントでSyntax Highlightを実装する</h3><pre class="language-tsx"><code class="language-tsx"><span class="token comment">// tslint:disable-next-line:no-reference</span>
+  <head lang="ja">
+    <title>カスタムコンポーネント機能の実装</title>
+    <meta charSet="utf-8" />
+    <meta name="keywords" content="静的サイトジェネレーター,NodeJS,React,generator" />
+    <meta name="description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。" />
+    <meta name="copyright" content="@Himenon" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:site" content="https:/himenon.github.io/custom-site-blog/article/custom-component-system" />
+    <meta property="og:title" content="カスタムコンポーネント機能の実装" />
+    <meta property="og:url" content="https:/himenon.github.io/custom-site-blog/article/custom-component-system" />
+    <meta property="og:description" content="自作の静的サイトジェネレーターの技術ブログです。開発中の技術ノウハウや、考えを書く予定です。" />
+    <meta property="og:image" content="/custom-site-blog/assets/images/favicon/apple-touch-icon.png" />
+    <meta name="viewport" content="initial-scale=1,minimum-scale=0.5,user-scalable=no" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/custom-site-blog/assets/images/favicon/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/custom-site-blog/assets/images/favicon/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/custom-site-blog/assets/images/favicon/favicon-16x16.png" />
+    <link rel="manifest" href="/custom-site-blog/assets/images/favicon/site.webmanifest" />
+    <link href="/custom-site-blog/assets/stylesheets/styles.css" rel="stylesheet" />
+    <link href="/custom-site-blog/assets/stylesheets/pygment_trac.css" rel="stylesheet" />
+    <link href="/custom-site-blog/assets/stylesheets/prism-cb.css" rel="stylesheet" />
+    <script>
+      (function(i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function() {
+          (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+          m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+      })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+      ga('create', 'UA-55455343-7', 'auto');
+      ga('send', 'pageview');
+    </script>
+  </head>
+
+  <body>
+    <div id="header">
+      <div class="wrapper"><a href="/custom-site-blog" class="btn">静的サイトジェネレーター開発日誌</a>
+        <ul class="nav">
+          <li class="downloads"><a href="https://github.com/custom-site/custom-site" class="btn">Github</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="wrapper">
+      <section>
+        <h1>カスタムコンポーネント機能の実装</h1>
+        <div>
+          <p>PR22で追加しました。</p>
+          <ul>
+            <li><a href="https://github.com/custom-site/custom-site/pull/22">https://github.com/custom-site/custom-site/pull/22</a></li>
+          </ul>
+          <p>今回の新機能</p>
+          <ol>
+            <li>コンポーネント単位のカスタムが可能になりました。</li>
+          </ol>
+          <h2>実装の話</h2>
+          <p>実は<a href="/custom-site-blog/article/custom-template-system">前回</a>の使い回しなので、ほとんど書くことが無いんですよね〜。</p>
+          <p>CLIからカスタムコンポーネントのファイルを指定して、vmで実行。
+            その返り値を<code>&lt;MDXTag&gt;</code>に渡すだけでおしまい。</p>
+          <p>型の紹介でもしておきましょう。<a href="https://github.com/DefinitelyTyped/DefinitelyTyped/blob/master/types/react/index.d.ts#L2678-L2853">@types/react</a>で定義されている
+            <code>JSX.IntrinsicElements</code>を使えばカスタム可能なコンポーネントの一覧を得ることができます。
+            それを今回ほしい型に整形して定義しておきます。</p><pre class="language-ts"><code class="language-ts"><span class="token keyword">export</span> <span class="token keyword">type</span> CustomComponents <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token punctuation">[</span><span class="token constant">P</span> <span class="token keyword">in</span> keyof <span class="token constant">JSX</span><span class="token punctuation">.</span>IntrinsicElements<span class="token punctuation">]</span><span class="token operator">?</span><span class="token punctuation">:</span> <span class="token punctuation">(</span>props<span class="token punctuation">:</span> <span class="token constant">JSX</span><span class="token punctuation">.</span>IntrinsicElements<span class="token punctuation">[</span><span class="token constant">P</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token operator">=></span> React<span class="token punctuation">.</span>ReactNode <span class="token punctuation">}</span><span class="token punctuation">;</span>
+</code></pre>
+          <p>これを利用することにより、圧倒的に開発が楽になります！</p>
+          <p>さて、カスタムコンポーネントが利用できるようになったことで、とても重要な機能が利用できるようになりました。</p>
+          <p>それは、<u>Syntax Highlight機能</u>です。しかも、サーバーサイドレンダリングで！</p>
+          <p>この記事の執筆当時のカスタムコンポーネントを紹介しましょう。</p>
+          <h3>カスタムコンポーネントでSyntax Highlightを実装する</h3><pre class="language-tsx"><code class="language-tsx"><span class="token comment">// tslint:disable-next-line:no-reference</span>
 <span class="token comment">/// &lt;reference path="../node_modules/custom-site/typings/@mdx-js/index.d.ts"/></span>
 
 <span class="token keyword">import</span> <span class="token punctuation">{</span> CustomComponents <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">"@mdx-js/tag"</span><span class="token punctuation">;</span>
@@ -60,15 +120,52 @@ ga('send', 'pageview');
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
   <span class="token punctuation">}</span><span class="token punctuation">;</span>
 <span class="token punctuation">}</span><span class="token punctuation">;</span>
-</code></pre><h4>シンタックスハイライト ライブラリ</h4><p>Syntax Highlightのライブラリとして、<a href="https://github.com/PrismJS/prism">PrismJS</a>を利用するようにしました。
-<a href="https://github.com/highlightjs/highlight.js">highlight.js</a>という選択肢もあったのですが、導入から使いやすさ、拡張性からPrismJSを使用することにしました。</p><p>他にも、PrismJSは次のようなことができます。（highlightjsにもあるかもしれませんが）</p><ul><li>CSSでテーマをすぐに切り替えることが出来る。<ul><li><a href="https://github.com/PrismJS/prism-themes">https://github.com/PrismJS/prism-themes</a>に転がってる</li></ul></li><li>拡張がしやすそうである、ということが目に見える<ul><li>pluginが作れる: <a href="https://prismjs.com/extending.html#writing-plugins">https://prismjs.com/extending.html#writing-plugins</a></li><li>言語サポートを(やろうと思えば)増やせる：<a href="https://prismjs.com/extending.html#language-definitions">https://prismjs.com/extending.html#language-definitions</a></li></ul></li></ul><h4>カスタムコンポーネントでライブラリの要求する構造を作る</h4><p>PrismJSは次のような構造を求めます。（主にCSS）</p><pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>pre</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>language-*<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
+</code></pre>
+          <h4>シンタックスハイライト ライブラリ</h4>
+          <p>Syntax Highlightのライブラリとして、<a href="https://github.com/PrismJS/prism">PrismJS</a>を利用するようにしました。
+            <a href="https://github.com/highlightjs/highlight.js">highlight.js</a>という選択肢もあったのですが、導入から使いやすさ、拡張性からPrismJSを使用することにしました。</p>
+          <p>他にも、PrismJSは次のようなことができます。（highlightjsにもあるかもしれませんが）</p>
+          <ul>
+            <li>CSSでテーマをすぐに切り替えることが出来る。<ul>
+                <li><a href="https://github.com/PrismJS/prism-themes">https://github.com/PrismJS/prism-themes</a>に転がってる</li>
+              </ul>
+            </li>
+            <li>拡張がしやすそうである、ということが目に見える<ul>
+                <li>pluginが作れる: <a href="https://prismjs.com/extending.html#writing-plugins">https://prismjs.com/extending.html#writing-plugins</a></li>
+                <li>言語サポートを(やろうと思えば)増やせる：<a href="https://prismjs.com/extending.html#language-definitions">https://prismjs.com/extending.html#language-definitions</a></li>
+              </ul>
+            </li>
+          </ul>
+          <h4>カスタムコンポーネントでライブラリの要求する構造を作る</h4>
+          <p>PrismJSは次のような構造を求めます。（主にCSS）</p><pre class="language-html"><code class="language-html"><span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>pre</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>language-*<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>
   <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>code</span> <span class="token attr-name">class</span><span class="token attr-value"><span class="token punctuation">=</span><span class="token punctuation">"</span>language-*<span class="token punctuation">"</span></span><span class="token punctuation">></span></span>/* コード本体 */<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>code</span><span class="token punctuation">></span></span>
 <span class="token tag"><span class="token tag"><span class="token punctuation">&lt;/</span>pre</span><span class="token punctuation">></span></span>
-</code></pre><p>Markdownで与える情報は限定的なものなので、<code>&lt;pre&gt;</code>タグと<code>&lt;code&gt;</code>タグの両方に同時に同じ
-classNameを与えるには何かしらの手を加える必要があります。</p><p>カスタムコンポーネントを利用すると、これが一瞬で実現できます。
-どうやるかというと、<code>&lt;pre&gt;</code>の生成はスキップして、<code>&lt;code&gt;</code>の中で同時に<code>&lt;pre&gt;</code>を作ってしまえばよい、という発想です。
-そしたら、<code>&lt;code&gt;</code>のみに与えられるはずだったclassNameを<code>&lt;pre&gt;</code>の方にも与えてしまえば、あら不思議！できあがり！</p><p>おわり！最高ですね！</p><p>ああああああーーー僕はこれがやりたかったんだああああああああ！！！！！！</p><h4>サーバーレンダリングの恩恵</h4><p>JavaScriptをOFFにしてこのページを見てください！シンタクスハイライト付くんですよ！
-これが<strong>静的サイト</strong>だ！という感じですよね！クライアントのJSの力でハイライトをつけるなんてリッチなこと<del>リソースの無駄</del>したくないし、
-ブラウザごとの差異なんで気にしたくないので、最高ですねぇ。SPAでもないのでこれで十分！！！！</p><h2>次やること</h2><p>カスタムコンポーネント機能、雑に作ったけど、シンタックスハイライトを手に入れることが出来る強力な新機能でした〜！</p><p>次はGoogle Analyticsを先に入れましょう。どれくらい見られてるのかわからないのでね...!
-その次はー、ファイルから作成日と、更新日の取得あたりかな〜
-その次は〜、実験的に挑戦してみたい機能があるのでそれかな。</p><p>その前に、次の記事はパッケージ名変更の記事です（同じに日に書いたので言える）</p><h2>関連記事</h2><ul><li><a href="/custom-site-blog/article/change-package-name-to-custom-site">次の記事: パッケージ名を変更しました</a></li><li><a href="/custom-site-blog/article/custom-template-system">前の記事: カスタムテンプレート機能の実装</a></li></ul></div></section></div></body></html>
+</code></pre>
+          <p>Markdownで与える情報は限定的なものなので、<code>&lt;pre&gt;</code>タグと<code>&lt;code&gt;</code>タグの両方に同時に同じ
+            classNameを与えるには何かしらの手を加える必要があります。</p>
+          <p>カスタムコンポーネントを利用すると、これが一瞬で実現できます。
+            どうやるかというと、<code>&lt;pre&gt;</code>の生成はスキップして、<code>&lt;code&gt;</code>の中で同時に<code>&lt;pre&gt;</code>を作ってしまえばよい、という発想です。
+            そしたら、<code>&lt;code&gt;</code>のみに与えられるはずだったclassNameを<code>&lt;pre&gt;</code>の方にも与えてしまえば、あら不思議！できあがり！</p>
+          <p>おわり！最高ですね！</p>
+          <p>ああああああーーー僕はこれがやりたかったんだああああああああ！！！！！！</p>
+          <h4>サーバーレンダリングの恩恵</h4>
+          <p>JavaScriptをOFFにしてこのページを見てください！シンタクスハイライト付くんですよ！
+            これが<strong>静的サイト</strong>だ！という感じですよね！クライアントのJSの力でハイライトをつけるなんてリッチなこと<del>リソースの無駄</del>したくないし、
+            ブラウザごとの差異なんで気にしたくないので、最高ですねぇ。SPAでもないのでこれで十分！！！！</p>
+          <h2>次やること</h2>
+          <p>カスタムコンポーネント機能、雑に作ったけど、シンタックスハイライトを手に入れることが出来る強力な新機能でした〜！</p>
+          <p>次はGoogle Analyticsを先に入れましょう。どれくらい見られてるのかわからないのでね...!
+            その次はー、ファイルから作成日と、更新日の取得あたりかな〜
+            その次は〜、実験的に挑戦してみたい機能があるのでそれかな。</p>
+          <p>その前に、次の記事はパッケージ名変更の記事です（同じに日に書いたので言える）</p>
+          <h2>関連記事</h2>
+          <ul>
+            <li><a href="/custom-site-blog/article/change-package-name-to-custom-site">次の記事: パッケージ名を変更しました</a></li>
+            <li><a href="/custom-site-blog/article/custom-template-system">前の記事: カスタムテンプレート機能の実装</a></li>
+          </ul>
+        </div>
+      </section>
+    </div>
+  </body>
+
+</html>

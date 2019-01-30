@@ -1,8 +1,11 @@
 // tslint:disable-next-line:no-reference
 /// <reference path="../node_modules/@custom-site/custom-site/typings/@custom-site/index.d.ts"/>
 
-import { HtmlMetaData, ExternalLink } from "@custom-site/page";
+import { ExternalLink } from "@custom-site/page";
 import { PluginFunctionMap } from "@custom-site/plugin";
+import * as path from "path";
+
+const pretty = require('pretty');
 
 const getOgImageSource = (globalLinks: ExternalLink["globalLinks"]): string | undefined => {
   if (!globalLinks) {
@@ -20,23 +23,46 @@ const getOgImageSource = (globalLinks: ExternalLink["globalLinks"]): string | un
   return;
 }
 
-const getDescription = (metaData: HtmlMetaData): string | undefined => {
-  if (metaData.description) {
-    return metaData.description;
-  }
-  return;
-}
-
 export const onGenerateMetaData: PluginFunctionMap["onGenerateMetaData"] = payload => {
-  const oldMetaData = payload.metaData;
-  const newMetaData: HtmlMetaData = {
-    ...oldMetaData,
-    "og:title": oldMetaData.title,
-    "og:url": "https://himenon.github.io/custom-site-blog",
-    "og:description": getDescription(oldMetaData),
-    "og:image": getOgImageSource(oldMetaData.globalLinks)
+  const page = payload.page;
+  const currentPageAbsolutePath = path.join(payload.site.baseUrl, page.uri);
+  payload.page.metaData = {
+    ...payload.page.metaData,
+    extend: {
+      meta: [
+        {
+          name: "twitter:card",
+          content: "summary",
+        },
+        {
+          name: "twitter:site",
+          content: currentPageAbsolutePath,
+        },
+        {
+          property: "og:title",
+          content: page.metaData.title,
+        },
+        {
+          property: "og:url",
+          content: currentPageAbsolutePath
+        },
+        {
+          property: "og:description",
+          content: page.metaData.description
+        },
+        {
+          property: "og:image",
+          content: getOgImageSource(page.metaData.globalLinks)
+        },
+      ]
+    }
   };
-  return {
-    metaData: newMetaData,
-  };
+  return payload;
 };
+
+
+export const onAfterRenderPage: PluginFunctionMap["onAfterRenderPage"] = (payload) => {
+  return {
+    html: pretty(payload.html)
+  }
+}
