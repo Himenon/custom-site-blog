@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const path = require("path");
+const urljoin = require("url-join");
 const pretty = require('pretty');
 const getOgImageSource = (globalLinks) => {
     if (!globalLinks) {
@@ -19,7 +19,7 @@ const getOgImageSource = (globalLinks) => {
 };
 exports.onGenerateMetaData = payload => {
     const page = payload.page;
-    const currentPageAbsolutePath = path.join(payload.site.baseUrl, page.uri);
+    const currentPageAbsolutePath = urljoin(payload.site.baseUrl, page.uri);
     const imageUrl = getOgImageSource(page.metaData.globalLinks);
     payload.page.metaData = {
         ...payload.page.metaData,
@@ -47,7 +47,7 @@ exports.onGenerateMetaData = payload => {
                 },
                 {
                     property: "og:image",
-                    content: path.join(payload.site.baseUrl, imageUrl || "")
+                    content: urljoin(payload.site.baseUrl, imageUrl || "")
                 },
             ]
         }

@@ -3,7 +3,7 @@
 
 import { ExternalLink } from "@custom-site/page";
 import { PluginFunctionMap } from "@custom-site/plugin";
-import * as path from "path";
+import urljoin = require("url-join");
 
 const pretty = require('pretty');
 
@@ -25,7 +25,7 @@ const getOgImageSource = (globalLinks: ExternalLink["globalLinks"]): string | un
 
 export const onGenerateMetaData: PluginFunctionMap["onGenerateMetaData"] = payload => {
   const page = payload.page;
-  const currentPageAbsolutePath = path.join(payload.site.baseUrl, page.uri);
+  const currentPageAbsolutePath = urljoin(payload.site.baseUrl, page.uri);
   const imageUrl = getOgImageSource(page.metaData.globalLinks);
   payload.page.metaData = {
     ...payload.page.metaData,
@@ -53,7 +53,7 @@ export const onGenerateMetaData: PluginFunctionMap["onGenerateMetaData"] = paylo
         },
         {
           property: "og:image",
-          content: path.join(payload.site.baseUrl, imageUrl || "")
+          content: urljoin(payload.site.baseUrl, imageUrl || "")
         },
       ]
     }
